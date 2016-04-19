@@ -151,7 +151,7 @@ To animate path changes, set `app:spark_animateChanges="true"` or call `sparkVie
 Vision
 -------
 Spark is a very simple library and cannot possibly meet everyone's use-cases. A more robust charting
-library (such as [MP Android Chart](https://github.com/PhilJay/MPAndroidChart) may be a better fit
+library (such as [MP Android Chart](https://github.com/PhilJay/MPAndroidChart)) may be a better fit
 if you're looking for things like axes or advanced touch gestures. Spark aims to be lightweight
 alternative for showing simple sparklines. Spark will prioritize simplicity over new use-cases the
 vast majority of the time.
