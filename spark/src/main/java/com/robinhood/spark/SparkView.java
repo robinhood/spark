@@ -474,11 +474,11 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
      */
     public void setAdapter(SparkAdapter adapter) {
         if (this.adapter != null) {
-            adapter.unregisterDataSetObserver(dataSetObserver);
+            this.adapter.unregisterDataSetObserver(dataSetObserver);
         }
         this.adapter = adapter;
         if (this.adapter != null) {
-            adapter.registerDataSetObserver(dataSetObserver);
+            this.adapter.registerDataSetObserver(dataSetObserver);
         }
         populatePath();
     }
