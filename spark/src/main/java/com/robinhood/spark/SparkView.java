@@ -250,6 +250,13 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
         return scaleHelper.getY(y);
     }
 
+    /**
+     * Gets a copy of the sparkline path
+     */
+    public Path getSparkLinePath() {
+        return new Path(sparkPath);
+    }
+
     private void setScrubLine(float x) {
         scrubLinePath.reset();
         scrubLinePath.moveTo(x, getPaddingTop());
