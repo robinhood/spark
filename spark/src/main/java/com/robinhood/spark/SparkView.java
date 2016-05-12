@@ -228,7 +228,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
      */
     public float getScaledX(float x) {
         if (scaleHelper == null) {
-            Log.w(TAG, "No scale available yet.");
+            Log.w(TAG, "getScaledX() - no scale available yet.");
             return x;
         }
         return scaleHelper.getX(x);
@@ -244,7 +244,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
      */
     public float getScaledY(float y) {
         if (scaleHelper == null) {
-            Log.w(TAG, "No scale available yet.");
+            Log.w(TAG, "getScaledX() - no scale available yet.");
             return y;
         }
         return scaleHelper.getY(y);
