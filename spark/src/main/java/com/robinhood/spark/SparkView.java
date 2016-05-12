@@ -164,7 +164,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
             return;
         }
 
-        scaleHelper = new ScaleHelper(adapter, new RectF(contentRect), lineWidth, fill);
+        scaleHelper = new ScaleHelper(adapter, contentRect, lineWidth, fill);
 
         // xPoints is only used in scrubbing, skip if disabled
         if (scrubEnabled) {
