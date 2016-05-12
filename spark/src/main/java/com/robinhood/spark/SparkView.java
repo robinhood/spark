@@ -64,6 +64,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
     private SparkAdapter adapter;
 
     // misc fields
+    private ScaleHelper scaleHelper;
     private Paint sparkLinePaint;
     private Paint baseLinePaint;
     private Paint scrubLinePaint;
@@ -160,8 +161,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
             return;
         }
 
-        ScaleHelper scaleHelper = new ScaleHelper(adapter, contentRect, lineWidth, fill);
-
+        scaleHelper = new ScaleHelper(adapter, new RectF(contentRect), lineWidth, fill);
 
         // xPoints is only used in scrubbing, skip if disabled
         if (scrubEnabled) {
@@ -213,6 +213,26 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
         renderPath.addPath(sparkPath);
 
         invalidate();
+    }
+
+    /**
+     * Get the scaled (pixel) coordinate of your given x value.
+     * @param x    the value to scale (should be the same units as your graph's data points)
+     * @return the pixel coordinates of where this point is located in SparkView's bounds
+     */
+    public float getScaledX(float x) {
+        if (scaleHelper == null) throw new IllegalStateException("No scale available yet");
+        return scaleHelper.getX(x);
+    }
+
+    /**
+     * Get the scaled (pixel) coordinate of your given y value.
+     * @param y    the value to scale (should be the same units as your graph's data points)
+     * @return the pixel coordinates of where this point is located in SparkView's bounds
+     */
+    public float getScaledY(float y) {
+        if (scaleHelper == null) throw new IllegalStateException("No scale available yet");
+        return scaleHelper.getY(y);
     }
 
     private void setScrubLine(float x) {
@@ -521,6 +541,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
     }
 
     private void clearData() {
+        scaleHelper = null;
         renderPath.reset();
         sparkPath.reset();
         baseLinePath.reset();
@@ -534,8 +555,6 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
         // the width and height of the view
         final float width, height;
         final int size;
-        // the distance in pixels between each X value
-        final float xStep;
         // the scale factor for the Y values
         final float xScale, yScale;
         // translates the Y values back into the bounding rect after being scaled
@@ -552,7 +571,6 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
             this.height = contentRect.height() - lineWidthOffset;
 
             this.size = adapter.getCount();
-            this.xStep = width / (size - 1);
 
             // get data bounds from adapter
             RectF bounds = adapter.getDataBounds();
