@@ -31,6 +31,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.ColorInt;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewConfiguration;
 
@@ -42,6 +43,8 @@ import java.util.List;
  * A {@link SparkView} is a simplified line chart with no axes.
  */
 public class SparkView extends View implements ScrubGestureDetector.ScrubListener {
+    private static final String TAG = "Spark";
+
     // styleable values
     @ColorInt private int lineColor;
     private float lineWidth;
@@ -216,22 +219,34 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
     }
 
     /**
-     * Get the scaled (pixel) coordinate of your given x value.
+     * Get the scaled (pixel) coordinate of your given x value. If no scale is currently computed
+     * (for instance {@link SparkAdapter} has not been set or has < 2 points of data). This method
+     * will return the unscaled value.
+     *
      * @param x    the value to scale (should be the same units as your graph's data points)
      * @return the pixel coordinates of where this point is located in SparkView's bounds
      */
     public float getScaledX(float x) {
-        if (scaleHelper == null) throw new IllegalStateException("No scale available yet");
+        if (scaleHelper == null) {
+            Log.w(TAG, "No scale available yet.");
+            return x;
+        }
         return scaleHelper.getX(x);
     }
 
     /**
-     * Get the scaled (pixel) coordinate of your given y value.
+     * Get the scaled (pixel) coordinate of your given y value. If no scale is currently computed
+     * (for instance {@link SparkAdapter} has not been set or has < 2 points of data). This method
+     * will return the unscaled value.
+     *
      * @param y    the value to scale (should be the same units as your graph's data points)
      * @return the pixel coordinates of where this point is located in SparkView's bounds
      */
     public float getScaledY(float y) {
-        if (scaleHelper == null) throw new IllegalStateException("No scale available yet");
+        if (scaleHelper == null) {
+            Log.w(TAG, "No scale available yet.");
+            return y;
+        }
         return scaleHelper.getY(y);
     }
 
