@@ -220,8 +220,8 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
 
     /**
      * Get the scaled (pixel) coordinate of your given x value. If no scale is currently computed
-     * (for instance {@link SparkAdapter} has not been set or has < 2 points of data). This method
-     * will return the unscaled value.
+     * (for instance {@link SparkAdapter} has not been set or has less than 2 points of data). This
+     * method will return the unscaled value.
      *
      * @param x    the value to scale (should be the same units as your graph's data points)
      * @return the pixel coordinates of where this point is located in SparkView's bounds
@@ -236,8 +236,8 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
 
     /**
      * Get the scaled (pixel) coordinate of your given y value. If no scale is currently computed
-     * (for instance {@link SparkAdapter} has not been set or has < 2 points of data). This method
-     * will return the unscaled value.
+     * (for instance {@link SparkAdapter} has not been set or has less than 2 points of data). This
+     * method will return the unscaled value.
      *
      * @param y    the value to scale (should be the same units as your graph's data points)
      * @return the pixel coordinates of where this point is located in SparkView's bounds
