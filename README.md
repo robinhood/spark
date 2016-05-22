@@ -7,7 +7,7 @@ Spark
 > general shape of the variation (typically over time) in some measurement, such as temperature or
 > stock market price, in a simple and highly condensed way.
 >
-> -- en.wikipedia.org/wiki/Sparkline
+> -- [en.wikipedia.org/wiki/Sparkline](https://en.wikipedia.org/wiki/Sparkline)
 
 Spark is a simple Android library that takes a series of x,y points at any scale and draws them as a
 sparkline chart.
