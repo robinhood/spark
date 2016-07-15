@@ -123,7 +123,7 @@ public class ScaleHelperUnitTest {
     @Test
     public void testNonWrappingDataBounds() {
         testAdapter.setYData(new float[] {0, 50, 100});
-        // set bounds to 'zoon in' on the first two points
+        // set bounds to 'zoom in' on the first two points
         testAdapter.setDataBounds(0, 0, 1, 50);
         SparkView.ScaleHelper scaleHelper = new SparkView.ScaleHelper(testAdapter, contentRect, 0,
                 false);
@@ -145,5 +145,56 @@ public class ScaleHelperUnitTest {
         float y2 = scaleHelper.getY(testAdapter.getY(2));
         assertEquals(200f, x2);
         assertEquals(-100f, y2);
+    }
+
+    @Test
+    public void testHorizontalLine() {
+        testAdapter.setYData(new float[] {25, 25, 25});
+        SparkView.ScaleHelper scaleHelper = new SparkView.ScaleHelper(testAdapter, contentRect, 0,
+                false);
+
+        // assert point 1 is left middle
+        float x0 = scaleHelper.getX(testAdapter.getX(0));
+        float y0 = scaleHelper.getY(testAdapter.getY(0));
+        assertEquals(0f, x0);
+        assertEquals(50f, y0);
+
+        // assert point 1 is middle middle
+        float x1 = scaleHelper.getX(testAdapter.getX(1));
+        float y1 = scaleHelper.getY(testAdapter.getY(1));
+        assertEquals(50f, x1);
+        assertEquals(50f, y1);
+
+        // assert point 1 is right middle
+        float x2 = scaleHelper.getX(testAdapter.getX(2));
+        float y2 = scaleHelper.getY(testAdapter.getY(2));
+        assertEquals(100f, x2);
+        assertEquals(50f, y2);
+    }
+
+    @Test
+    public void testVerticalLine() {
+        testAdapter.setYData(new float[] {0, 50, 100});
+        testAdapter.setXData(new float[] {25, 25, 25});
+        SparkView.ScaleHelper scaleHelper = new SparkView.ScaleHelper(testAdapter, contentRect, 0,
+                false);
+
+        // assert point 1 is middle bottom
+        float x0 = scaleHelper.getX(testAdapter.getX(0));
+        float y0 = scaleHelper.getY(testAdapter.getY(0));
+        assertEquals(50f, x0);
+        assertEquals(100f, y0);
+
+        // assert point 1 is middle middle
+        float x1 = scaleHelper.getX(testAdapter.getX(1));
+        float y1 = scaleHelper.getY(testAdapter.getY(1));
+        assertEquals(50f, x1);
+        assertEquals(50f, y1);
+
+        // assert point 1 is middle top
+        float x2 = scaleHelper.getX(testAdapter.getX(2));
+        float y2 = scaleHelper.getY(testAdapter.getY(2));
+        assertEquals(50f, x2);
+        assertEquals(0f, y2);
     }
 }

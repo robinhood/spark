@@ -596,6 +596,10 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
 
             // get data bounds from adapter
             RectF bounds = adapter.getDataBounds();
+
+            // if data is a line (which technically has no size), expand bounds to center the data
+            bounds.inset(bounds.width() == 0 ? -1 : 0, bounds.height() == 0 ? -1 : 0);
+
             final float minX = bounds.left;
             final float maxX = bounds.right;
             final float minY = bounds.top;

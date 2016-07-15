@@ -2,7 +2,13 @@ package com.robinhood.spark;
 
 import android.graphics.RectF;
 
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+
+import static org.mockito.Matchers.anyFloat;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
 public class TestAdapter extends SparkAdapter {
@@ -56,13 +62,31 @@ public class TestAdapter extends SparkAdapter {
     }
 
     public static RectF createMockRectF(float left, float top, float right, float bottom) {
-        RectF rectF = mock(RectF.class);
+        final RectF rectF = mock(RectF.class);
         rectF.left = left;
         rectF.top = top;
         rectF.right = right;
         rectF.bottom = bottom;
         when(rectF.width()).thenReturn(right - left);
         when(rectF.height()).thenReturn(bottom - top);
+
+        doAnswer(new Answer<Void>() {
+            @Override
+            public Void answer(InvocationOnMock invocation) throws Throwable {
+                reset(rectF);
+                Object[] args = invocation.getArguments();
+                float dx = (float) args[0];
+                float dy = (float) args[1];
+                rectF.left += dx;
+                rectF.top += dy;
+                rectF.right -= dx;
+                rectF.bottom -= dy;
+                when(rectF.width()).thenReturn(rectF.right - rectF.left);
+                when(rectF.height()).thenReturn(rectF.bottom - rectF.top);
+                return null;
+            }
+        }).when(rectF).inset(anyFloat(), anyFloat());
+
         return rectF;
     }
 }
