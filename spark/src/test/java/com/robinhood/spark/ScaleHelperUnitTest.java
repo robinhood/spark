@@ -153,7 +153,7 @@ public class ScaleHelperUnitTest {
         SparkView.ScaleHelper scaleHelper = new SparkView.ScaleHelper(testAdapter, contentRect, 0,
                 false);
 
-        // assert point 1 is left middle
+        // assert point 0 is left middle
         float x0 = scaleHelper.getX(testAdapter.getX(0));
         float y0 = scaleHelper.getY(testAdapter.getY(0));
         assertEquals(0f, x0);
@@ -165,7 +165,7 @@ public class ScaleHelperUnitTest {
         assertEquals(50f, x1);
         assertEquals(50f, y1);
 
-        // assert point 1 is right middle
+        // assert point 2 is right middle
         float x2 = scaleHelper.getX(testAdapter.getX(2));
         float y2 = scaleHelper.getY(testAdapter.getY(2));
         assertEquals(100f, x2);
@@ -179,7 +179,7 @@ public class ScaleHelperUnitTest {
         SparkView.ScaleHelper scaleHelper = new SparkView.ScaleHelper(testAdapter, contentRect, 0,
                 false);
 
-        // assert point 1 is middle bottom
+        // assert point 0 is middle bottom
         float x0 = scaleHelper.getX(testAdapter.getX(0));
         float y0 = scaleHelper.getY(testAdapter.getY(0));
         assertEquals(50f, x0);
@@ -191,7 +191,7 @@ public class ScaleHelperUnitTest {
         assertEquals(50f, x1);
         assertEquals(50f, y1);
 
-        // assert point 1 is middle top
+        // assert point 2 is middle top
         float x2 = scaleHelper.getX(testAdapter.getX(2));
         float y2 = scaleHelper.getY(testAdapter.getY(2));
         assertEquals(50f, x2);
