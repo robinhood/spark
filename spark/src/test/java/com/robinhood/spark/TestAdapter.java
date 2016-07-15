@@ -67,8 +67,8 @@ public class TestAdapter extends SparkAdapter {
         rectF.top = top;
         rectF.right = right;
         rectF.bottom = bottom;
-        when(rectF.width()).thenReturn(right - left);
-        when(rectF.height()).thenReturn(bottom - top);
+        when(rectF.width()).thenReturn(rectF.right - rectF.left);
+        when(rectF.height()).thenReturn(rectF.bottom - rectF.top);
 
         doAnswer(new Answer<Void>() {
             @Override
@@ -81,8 +81,6 @@ public class TestAdapter extends SparkAdapter {
                 rectF.top += dy;
                 rectF.right -= dx;
                 rectF.bottom -= dy;
-                when(rectF.width()).thenReturn(rectF.right - rectF.left);
-                when(rectF.height()).thenReturn(rectF.bottom - rectF.top);
                 return null;
             }
         }).when(rectF).inset(anyFloat(), anyFloat());
