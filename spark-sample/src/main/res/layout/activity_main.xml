@@ -21,8 +21,8 @@
         app:spark_animateChanges="true"
         app:spark_showPointsShape="circle"
         app:spark_showPointsShapeType="filled"
-        app:spark_showPointsShapeSize="5"
-        app:showPointsShapeColor="@color/colorAccent"/>
+        app:spark_showPointsShapeSize="7"
+        app:spark_showPointsShapeColor="@android:color/holo_green_dark"/>
 
     <TextView
         android:id="@+id/scrub_info_textview"
