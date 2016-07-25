@@ -16,5 +16,17 @@
 
         <attr name="spark_scrubEnabled" format="boolean|reference" />
         <attr name="spark_animateChanges" format="boolean|reference" />
+        
+        <attr name="spark_showPoints" format="boolean"/>
+        <attr name="spark_showPointsShape" format="enum">
+            <enum name="circle" value="0"/>
+            <enum name="square" value="1"/>
+        </attr>
+        <attr name="spark_showPointsShapeType" format="enum">
+            <enum name="filled" value="0"/>
+            <enum name="unfilled" value="1"/>
+        </attr>
+        <attr name="spark_showPointsShapeSize" format="integer"/>
+        <attr name="spark_showPointsShapeColor" format="color"/>
     </declare-styleable>
 </resources>
