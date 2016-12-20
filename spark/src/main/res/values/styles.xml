@@ -14,5 +14,11 @@
         <item name="spark_scrubEnabled">false</item>
 
         <item name="spark_animateChanges">false</item>
+
+        <item name="spark_showPoints">true</item>
+        <item name="spark_showPointsShape">circle</item>
+        <item name="spark_showPointsShapeType">filled</item>
+        <item name="spark_showPointsShapeSize">1</item>
+        <item name="spark_showPointsShapeColor">@color/spark_line_color</item>
     </style>
 </resources>

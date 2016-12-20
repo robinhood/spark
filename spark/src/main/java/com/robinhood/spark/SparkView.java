@@ -56,6 +56,12 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
     private float scrubLineWidth;
     private boolean scrubEnabled;
     private boolean animateChanges;
+    private boolean showPoints;
+    private int showPointsShape;
+    private int showPointsShapeType;
+    private int showPointsShapeSize;
+    private int defaultStrokeWidth;
+    @ColorInt private int showPointsShapeColor;
 
     // the onDraw data
     private final Path renderPath = new Path();
@@ -71,6 +77,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
     private Paint sparkLinePaint;
     private Paint baseLinePaint;
     private Paint scrubLinePaint;
+    private Paint pointShapePaint;
     private OnScrubListener scrubListener;
     private ScrubGestureDetector scrubGestureDetector;
     private List<Float> xPoints;
@@ -113,6 +120,12 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
         scrubLineColor = a.getColor(R.styleable.spark_SparkView_spark_scrubLineColor, baseLineColor);
         scrubLineWidth = a.getDimension(R.styleable.spark_SparkView_spark_scrubLineWidth, lineWidth);
         animateChanges = a.getBoolean(R.styleable.spark_SparkView_spark_animateChanges, false);
+        showPoints = a.getBoolean(R.styleable.spark_SparkView_spark_showPoints, true);
+        showPointsShape = a.getInt(R.styleable.spark_SparkView_spark_showPointsShape, 0);
+        showPointsShapeType = a.getInt(R.styleable.spark_SparkView_spark_showPointsShapeType, 0);
+        showPointsShapeSize = a.getInt(R.styleable.spark_SparkView_spark_showPointsShapeSize, 1);
+        showPointsShapeColor = a.getColor(R.styleable.spark_SparkView_spark_showPointsShapeColor, lineColor);
+        defaultStrokeWidth = 3;
         a.recycle();
 
         sparkLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -134,6 +147,12 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
         scrubLinePaint.setStrokeWidth(scrubLineWidth);
         scrubLinePaint.setColor(scrubLineColor);
         scrubLinePaint.setStrokeCap(Paint.Cap.ROUND);
+
+        pointShapePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        pointShapePaint.setStyle(Paint.Style.FILL_AND_STROKE);
+        pointShapePaint.setColor(showPointsShapeColor);
+        pointShapePaint.setStrokeCap(Paint.Cap.SQUARE);
+        pointShapePaint.setStrokeWidth(defaultStrokeWidth);
 
         final Handler handler = new Handler();
         final float touchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
@@ -277,6 +296,24 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
         canvas.drawPath(baseLinePath, baseLinePaint);
         canvas.drawPath(renderPath, sparkLinePaint);
         canvas.drawPath(scrubLinePath, scrubLinePaint);
+        drawPoints(canvas);
+    }
+
+    private void drawPoints(Canvas canvas) {
+        if (showPoints) {
+            pointShapePaint.setStyle(showPointsShapeType == 0 ? Paint.Style.FILL : Paint.Style.STROKE);
+            final int adapterCount = adapter.getCount();
+            for (int i = 0; i < adapterCount; i++) {
+                final float x = scaleHelper.getX(adapter.getX(i));
+                final float y = scaleHelper.getY(adapter.getY(i));
+                if (showPointsShape == 0) {
+                    canvas.drawCircle(x, y, showPointsShapeSize, pointShapePaint);
+                } else  if (showPointsShape == 1) {
+                    canvas.drawRect(x - showPointsShapeSize, y - showPointsShapeSize,
+                            x + showPointsShapeSize, y + showPointsShapeSize, pointShapePaint);
+                }
+            }
+        }
     }
 
     /**
@@ -506,6 +543,83 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
     }
 
     /**
+     * Return true if locating points in View.
+     */
+    public boolean isShowPoints() {
+        return showPoints;
+    }
+
+    /**
+     * Set to show points in the View.
+     */
+    public void setShowPoints(boolean showPoints) {
+        this.showPoints = showPoints;
+        invalidate();
+    }
+
+    /**
+     * Return int value of the Shape of the locating point.
+     * 0 indicates Circle and 1 indicates Square
+     */
+    public int getShowPointsShape() {
+        return showPointsShape;
+    }
+
+    /**
+     * Set the shape of the points to locate in the view.
+     */
+    public void setShowPointsShape(int showPointsShape) {
+        this.showPointsShape = showPointsShape;
+        invalidate();
+    }
+
+    /**
+     * Return int value of the Shape Type of the locating point.
+     * 0 indicates Filled and 1 indicates Unfilled shape.
+     */
+    public int getShowPointsShapeType() {
+        return showPointsShapeType;
+    }
+
+    /**
+     * Set the shape type of the points to locate in the view.
+     */
+    public void setShowPointsShapeType(int showPointsShapeType) {
+        this.showPointsShapeType = showPointsShapeType;
+        invalidate();
+    }
+
+    /**
+     * get the width in pixels of the shape of point
+     */
+    public int getShowPointsShapeSize() {
+        return showPointsShapeSize;
+    }
+
+    /**
+     * Set the width in pixels of the shape of point
+     */
+    public void setShowPointsShapeSize(int showPointsShapeSize) {
+        this.showPointsShapeSize = showPointsShapeSize;
+        invalidate();
+    }
+
+    /**
+     * get the color of the shape of point
+     */
+    public int getShowPointsShapeColor() {
+        return showPointsShapeColor;
+    }
+
+    /**
+     * Set the color the shape of point
+     */
+    public void setShowPointsShapeColor(@ColorInt int showPointsShapeColor) {
+        this.showPointsShapeColor = showPointsShapeColor;
+        invalidate();
+    }
+
+    /**
      * Set a {@link OnScrubListener} to be notified of the user's scrubbing gestures.
      */
     public void setScrubListener(OnScrubListener scrubListener) {
@@ -653,10 +767,10 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
         if (contentRect == null) return;
 
         contentRect.set(
-                getPaddingStart(),
-                getPaddingTop(),
-                getWidth() - getPaddingEnd(),
-                getHeight() - getPaddingBottom()
+                getPaddingStart() + showPointsShapeSize,
+                getPaddingTop() + showPointsShapeSize,
+                getWidth() - getPaddingEnd() - showPointsShapeSize,
+                getHeight() - getPaddingBottom() - showPointsShapeSize
         );
     }
 

@@ -18,7 +18,11 @@
         android:layout_height="200dp"
         app:spark_lineColor="@color/colorAccent"
         app:spark_scrubEnabled="true"
-        app:spark_animateChanges="true"/>
+        app:spark_animateChanges="true"
+        app:spark_showPointsShape="circle"
+        app:spark_showPointsShapeType="filled"
+        app:spark_showPointsShapeSize="7"
+        app:spark_showPointsShapeColor="@android:color/holo_green_dark"/>
 
     <TextView
         android:id="@+id/scrub_info_textview"
