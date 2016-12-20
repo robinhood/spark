@@ -15,6 +15,12 @@
         <attr name="spark_scrubLineWidth" format="dimension|reference" />
 
         <attr name="spark_scrubEnabled" format="boolean|reference" />
-        <attr name="spark_animateChanges" format="boolean|reference" />
+
+        <attr name="spark_animationType" format="enum">
+			<enum name="none" value="0"/>
+			<enum name="line" value="1"/>
+			<enum name="point" value="2"/>
+		</attr>
+		<attr name="spark_animationDuration" format="integer" />
     </declare-styleable>
 </resources>
