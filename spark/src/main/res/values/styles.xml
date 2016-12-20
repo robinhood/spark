@@ -12,7 +12,6 @@
         <item name="spark_scrubLineColor">@color/spark_scrub_line_color</item>
         <item name="spark_scrubLineWidth">@dimen/spark_scrub_line_width</item>
         <item name="spark_scrubEnabled">false</item>
-
-        <item name="spark_animateChanges">false</item>
+        <item name="spark_animateChanges">true</item>
     </style>
 </resources>

@@ -3,4 +3,6 @@
     <string name="scrub_empty">Tap and hold the graph to scrub.</string>
     <string name="scrub_format">Scrubbing value: %1$s</string>
     <string name="randomize">Randomize</string>
+    <string name="anime_line">Anime Line</string>
+    <string name="anime_point">Anime Point</string>
 </resources>

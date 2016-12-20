@@ -18,7 +18,7 @@
         android:layout_height="200dp"
         app:spark_lineColor="@color/colorAccent"
         app:spark_scrubEnabled="true"
-        app:spark_animateChanges="true"/>
+        />
 
     <TextView
         android:id="@+id/scrub_info_textview"
@@ -29,10 +29,33 @@
         android:textAppearance="?android:textAppearanceLarge"
         android:text="@string/scrub_empty"/>
 
-    <Button
-        android:id="@+id/random_button"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:text="@string/randomize"/>
+        android:orientation="horizontal"
+        >
+
+        <Button
+            android:id="@+id/random_button"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/randomize"/>
+
+        <Button
+            android:id="@+id/random_button_line"
+            android:layout_width="0dip"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="@string/anime_line"/>
+
+        <Button
+            android:id="@+id/random_button_point"
+            android:layout_width="0dip"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="@string/anime_point"/>
+
+    </LinearLayout>
+
 </LinearLayout>

@@ -16,6 +16,8 @@
 
 package com.robinhood.spark.sample;
 
+import java.util.Random;
+
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -23,10 +25,12 @@ import android.widget.TextView;
 
 import com.robinhood.spark.SparkAdapter;
 import com.robinhood.spark.SparkView;
+import com.robinhood.spark.anime.LineSparkAnimator;
+import com.robinhood.spark.anime.MorphSparkAnimator;
 
-import java.util.Random;
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-public class MainActivity extends AppCompatActivity {
+    private SparkView sparkView;
     private RandomizedAdapter adapter;
     private TextView scrubInfoTextView;
 
@@ -35,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        SparkView sparkView = (SparkView) findViewById(R.id.sparkview);
+        sparkView = (SparkView) findViewById(R.id.sparkview);
 
         adapter = new RandomizedAdapter();
         sparkView.setAdapter(adapter);
@@ -50,15 +54,35 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        View button = findViewById(R.id.random_button);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                adapter.randomize();
-            }
-        });
+        findViewById(R.id.random_button).setOnClickListener(this);
+        findViewById(R.id.random_button_line).setOnClickListener(this);
+        findViewById(R.id.random_button_point).setOnClickListener(this);
 
         scrubInfoTextView = (TextView) findViewById(R.id.scrub_info_textview);
+    }
+
+    @Override
+    public void onClick(View view) {
+
+        switch (view.getId()) {
+
+            case R.id.random_button_line:
+                sparkView.setSparkAnimator(new LineSparkAnimator());
+                adapter.randomize();
+                break;
+
+            case R.id.random_button_point:
+                sparkView.setSparkAnimator(new MorphSparkAnimator());
+                adapter.randomize();
+                break;
+
+            case R.id.random_button:
+            default:
+                sparkView.setSparkAnimator(null);
+                adapter.randomize();
+                break;
+        }
+
     }
 
     public static class RandomizedAdapter extends SparkAdapter {
