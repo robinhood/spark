@@ -147,7 +147,7 @@ just override `getX(int index)` in your `SparkAdapter` to give `SparkView` the c
 
 Animation
 ---------
-To animate path changes, set `app:spark_animateChanges="true"` or call `sparkView.setAnimateChanges(true);`.
+To animate path changes, set `app:spark_animationType="line"`, `app:spark_animationType="point"` or call `sparkView.setAnimationType(AnimeType.LINE);` or `sparkView.setAnimationType(AnimeType.POINT);`.
 
 Data Boundaries
 ---------------

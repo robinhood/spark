@@ -13,6 +13,7 @@
         <item name="spark_scrubLineWidth">@dimen/spark_scrub_line_width</item>
         <item name="spark_scrubEnabled">false</item>
 
-        <item name="spark_animateChanges">false</item>
+        <item name="spark_animationType">point</item>
+		<item name="spark_animationDuration">@android:integer/config_shortAnimTime</item>
     </style>
 </resources>
