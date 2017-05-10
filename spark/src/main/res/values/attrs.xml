@@ -17,6 +17,5 @@
         <attr name="spark_scrubEnabled" format="boolean|reference" />
 
         <attr name="spark_animateChanges" format="boolean|reference" />
-        <attr name="spark_animationDuration" format="integer" />
     </declare-styleable>
 </resources>

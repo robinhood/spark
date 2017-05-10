@@ -21,6 +21,9 @@ import java.util.Random;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.robinhood.spark.SparkAdapter;
@@ -33,6 +36,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private SparkView sparkView;
     private RandomizedAdapter adapter;
     private TextView scrubInfoTextView;
+
+    private AnimationType animationSelected;
+
+    private enum AnimationType {
+        NONE,
+        LINE,
+        MORPH
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,10 +66,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
 
         findViewById(R.id.random_button).setOnClickListener(this);
-        findViewById(R.id.random_button_line).setOnClickListener(this);
-        findViewById(R.id.random_button_point).setOnClickListener(this);
 
         scrubInfoTextView = (TextView) findViewById(R.id.scrub_info_textview);
+
+        // set select
+        Spinner animationSelect = (Spinner) findViewById(R.id.animation_select);
+        if(animationSelect != null) {
+            animationSelect.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, getResources().getStringArray(R.array.animations)));
+            animationSelect.setOnItemSelectedListener(new AnimationItemSelectedListener(this));
+        }
     }
 
     @Override
@@ -66,22 +82,42 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         switch (view.getId()) {
 
-            case R.id.random_button_line:
+            case R.id.random_button:
+            default:
+                randomize();
+                break;
+        }
+
+    }
+
+    public void setAnimationType(AnimationType type) {
+        animationSelected = type;
+    }
+
+    public void randomize() {
+
+        switch(animationSelected) {
+            case LINE:
                 sparkView.setSparkAnimator(new LineSparkAnimator());
                 adapter.randomize();
                 break;
 
-            case R.id.random_button_point:
-                sparkView.setSparkAnimator(new MorphSparkAnimator());
+            case MORPH:
+                // set animator
+                MorphSparkAnimator animator = new MorphSparkAnimator();
+                animator.setOldPoints(sparkView.getPoints());
+                animator.setAnimationDuration(3000L);
+
+                sparkView.setSparkAnimator(animator);
                 adapter.randomize();
                 break;
 
-            case R.id.random_button:
             default:
                 sparkView.setSparkAnimator(null);
                 adapter.randomize();
                 break;
         }
+
 
     }
 
@@ -117,4 +153,39 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             return yData[index];
         }
     }
+
+    private static class AnimationItemSelectedListener implements AdapterView.OnItemSelectedListener {
+
+        private MainActivity activity;
+
+        public AnimationItemSelectedListener(MainActivity activity) {
+            this.activity = activity;
+        }
+
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+            switch(position) {
+                case 2:
+                    activity.setAnimationType(AnimationType.LINE);
+                    break;
+
+                case 3:
+                    activity.setAnimationType(AnimationType.MORPH);
+                    break;
+
+                default:
+                    activity.setAnimationType(AnimationType.NONE);
+                    break;
+            }
+
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> adapterView) {
+            activity.setAnimationType(AnimationType.NONE);
+        }
+
+    }
+
 }

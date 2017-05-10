@@ -29,33 +29,16 @@
         android:textAppearance="?android:textAppearanceLarge"
         android:text="@string/scrub_empty"/>
 
-    <LinearLayout
+    <Spinner
+        android:id="@+id/animation_select"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+    />
+
+    <Button
+        android:id="@+id/random_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        >
-
-        <Button
-            android:id="@+id/random_button"
-            android:layout_width="0dip"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/randomize"/>
-
-        <Button
-            android:id="@+id/random_button_line"
-            android:layout_width="0dip"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:text="@string/anime_line"/>
-
-        <Button
-            android:id="@+id/random_button_point"
-            android:layout_width="0dip"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:text="@string/anime_point"/>
-
-    </LinearLayout>
+        android:text="@string/randomize"/>
 
 </LinearLayout>

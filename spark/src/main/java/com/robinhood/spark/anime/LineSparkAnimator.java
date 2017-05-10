@@ -3,50 +3,42 @@ package com.robinhood.spark.anime;
 import android.graphics.Path;
 import android.graphics.PathMeasure;
 
+import com.robinhood.spark.SparkView;
+
 /**
  * Line Spark Animator animates spark following the graph line
  */
 public class LineSparkAnimator implements SparkAnimator {
 
-    private Path renderPath;
-    private PathMeasure pathMeasure;
-    private float endLength;
-
     @Override
-    public void preAnimation(Path newPath) {
+    public void animation(SparkView view, float animatedValue) {
 
-        this.renderPath = new Path();
+        Path renderPath = view.getSparkLinePath();
+
+        if(renderPath == null) {
+            return;
+        }
 
         // get path length
-        pathMeasure = new PathMeasure(newPath, false);
-
-        endLength = pathMeasure.getLength();
-
-    }
-
-    @Override
-    public void preAnimation(Float[] oldXPoints, Float[] oldYPoints, Float[] newXPoints, Float[] newYPoints) {
-        // do nothing
-    }
-
-    @Override
-    public Path getNextPath(float animetedValue) {
+        PathMeasure pathMeasure = new PathMeasure(renderPath, false);
+        float endLength = pathMeasure.getLength();
 
         if(endLength > 0) {
 
-            float animatedPathLength = animetedValue * endLength;
+            float animatedPathLength = animatedValue * endLength;
 
             renderPath.reset();
             pathMeasure.getSegment(0, animatedPathLength, renderPath, true);
 
+            // must do it to animation happens
+            view.setRenderPath(renderPath);
         }
 
-        return renderPath;
     }
 
     @Override
-    public void endAnimation() {
-
+    public long getAnimationDuration() {
+        return -1;
     }
 
 }

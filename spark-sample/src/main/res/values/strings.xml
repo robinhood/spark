@@ -3,6 +3,15 @@
     <string name="scrub_empty">Tap and hold the graph to scrub.</string>
     <string name="scrub_format">Scrubbing value: %1$s</string>
     <string name="randomize">Randomize</string>
-    <string name="anime_line">Anime Line</string>
-    <string name="anime_point">Anime Point</string>
+    <string name="select_animation">Select animation</string>
+    <string name="animation_none">None</string>
+    <string name="animation_line">Line</string>
+    <string name="animation_morph">Morph</string>
+
+    <string-array name="animations">
+        <item>@string/select_animation</item>
+        <item>@string/animation_none</item>
+        <item>@string/animation_line</item>
+        <item>@string/animation_morph</item>
+    </string-array>
 </resources>

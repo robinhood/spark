@@ -1,6 +1,6 @@
 package com.robinhood.spark.anime;
 
-import android.graphics.Path;
+import com.robinhood.spark.SparkView;
 
 /**
  *  This interface is for animate SparkView when it changes
@@ -8,31 +8,17 @@ import android.graphics.Path;
 public interface SparkAnimator {
 
     /**
-     * This is executed before the animation starts, and after the new graph path is set
-     * @param newPath The new path, this will be the graph end
+     * Must do animation in Spark graphic.
+     * At the end, must call the spark.setRenderPath(renderPath), to draw the path in this animation step
+     * @param view The main SparkView object
+     * @param animatedValue Value represents the animation stage, this goes from 0 to 1
      */
-    void preAnimation(Path newPath);
+    void animation(final SparkView view, final float animatedValue);
 
     /**
-     * This is executed before the animation starts, and after the new graph path is set.
-     * It pass the old points and new points values, with no need of get it from path.
-     * @param oldXPoints The old X coordinates array
-     * @param oldYPoints The old Y coordinates array
-     * @param newXPoints The new X coordinates array
-     * @param newYPoints The new Y coordinates array
+     * Must return duration of animation, in milliseconds.
+     * If it return any negative value, Spark will set to default shor animation time
      */
-    void preAnimation(Float[] oldXPoints, Float[] oldYPoints, Float[] newXPoints, Float[] newYPoints);
-
-    /**
-     * This will do the animation itself, must execute the animation step here
-     * @param animatedValue Value represent the animation stage, this go from 0 to 1
-     * @return Return the path to show in this part of the animation
-     */
-    Path getNextPath(float animatedValue);
-
-    /**
-     * This will execute after the animation ends
-     */
-    void endAnimation();
+    long getAnimationDuration();
 
 }

@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -30,6 +29,7 @@ import android.graphics.Canvas;
 import android.graphics.CornerPathEffect;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.PointF;
 import android.graphics.RectF;
 import android.os.Build;
 import android.os.Handler;
@@ -58,8 +58,6 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
     @ColorInt private int scrubLineColor;
     private float scrubLineWidth;
     private boolean scrubEnabled;
-    private long animationDuration;
-    private boolean animateChanges;
     // animation
     private SparkAnimator sparkAnimator;
 
@@ -85,9 +83,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
     private static int shortAnimationTime;
 
     private List<Float> currXPoints;
-    private List<Float> oldXPoints;
-    private List<Float> currYPoints;
-    private List<Float> oldYPoints;
+    private List<PointF> currPoints;
 
     public SparkView(Context context) {
         super(context);
@@ -112,7 +108,8 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
 
     private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
 
-        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.spark_SparkView, defStyleAttr, defStyleRes);
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.spark_SparkView,
+                defStyleAttr, defStyleRes);
 
         lineColor = a.getColor(R.styleable.spark_SparkView_spark_lineColor, 0);
         lineWidth = a.getDimension(R.styleable.spark_SparkView_spark_lineWidth, 0);
@@ -123,8 +120,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
         scrubEnabled = a.getBoolean(R.styleable.spark_SparkView_spark_scrubEnabled, true);
         scrubLineColor = a.getColor(R.styleable.spark_SparkView_spark_scrubLineColor, baseLineColor);
         scrubLineWidth = a.getDimension(R.styleable.spark_SparkView_spark_scrubLineWidth, lineWidth);
-        animationDuration = a.getInt(R.styleable.spark_SparkView_spark_animationDuration, 0);
-        animateChanges = a.getBoolean(R.styleable.spark_SparkView_spark_animateChanges, false);
+        boolean animateChanges = a.getBoolean(R.styleable.spark_SparkView_spark_animateChanges, false);
         a.recycle();
 
         sparkLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -154,10 +150,9 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
         setOnTouchListener(scrubGestureDetector);
 
         currXPoints = new ArrayList<>();
-        oldXPoints = new ArrayList<>();
-        currYPoints = new ArrayList<>();
-        oldYPoints = new ArrayList<>();
+        currPoints = new ArrayList<>();
 
+        // for backward support
         if(animateChanges) {
             sparkAnimator = new LineSparkAnimator();
         }
@@ -187,14 +182,8 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
 
         scaleHelper = new ScaleHelper(adapter, contentRect, lineWidth, fill);
 
-        // keep old points
-        oldXPoints.clear();
-        oldXPoints.addAll(currYPoints);
-        oldYPoints.clear();
-        oldYPoints.addAll(currYPoints);
-
         currXPoints.clear();
-        currYPoints.clear();
+        currPoints.clear();
 
         // make our main graph path
         sparkPath.reset();
@@ -202,9 +191,11 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
             final float x = scaleHelper.getX(adapter.getX(i));
             final float y = scaleHelper.getY(adapter.getY(i));
 
-            // get points to animate
+            // points to render graphic
             currXPoints.add(x);
-            currYPoints.add(y);
+
+            // get points to animate
+            currPoints.add(new PointF(x, y));
 
             if (i == 0) {
                 sparkPath.moveTo(x, y);
@@ -277,6 +268,17 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
      */
     public Path getSparkLinePath() {
         return new Path(sparkPath);
+    }
+
+    /**
+     * Set the path to render in onDraw, used for animation purposes
+     */
+    public void setRenderPath(final Path renderPath) {
+        this.renderPath.reset();
+        this.renderPath.addPath(renderPath);
+        this.renderPath.rLineTo(0, 0);
+
+        invalidate();
     }
 
     private void setScrubLine(float x) {
@@ -352,19 +354,6 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
             sparkLinePaint.setPathEffect(null);
         }
         invalidate();
-    }
-
-    /**
-     * Animation duration
-     */
-    public long getAnimationDuration() {
-        return animationDuration;
-    }
-    /**
-     * Animation duration
-     */
-    public void setAnimationDuration(long animationDuration) {
-        this.animationDuration = animationDuration;
     }
 
     /**
@@ -569,26 +558,22 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
         populatePath();
     }
 
+    /**
+     * Returns a copy of current graphic points
+     * @return current graphic points
+     */
+    public List<PointF> getPoints() {
+        return new ArrayList<>(currPoints);
+    }
+
     private void doPathAnimation() {
         if (pathAnimator != null) {
             pathAnimator.cancel();
         }
 
-        if (shortAnimationTime == 0) {
-            shortAnimationTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
-        }
-
         pathAnimator = getSparkAnimation();
 
         if(pathAnimator != null) {
-
-            sparkAnimator.preAnimation(new Path(sparkPath));
-
-            Float[] typedFloat = new Float[0];
-            sparkAnimator.preAnimation(oldXPoints.toArray(typedFloat), oldYPoints.toArray(typedFloat), currXPoints.toArray(typedFloat), currYPoints.toArray(typedFloat));
-
-            pathAnimator.setDuration(animationDuration == 0 ? shortAnimationTime: animationDuration);
-
             pathAnimator.start();
         }
 
@@ -596,55 +581,41 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
 
     private ValueAnimator getSparkAnimation() {
 
-        ValueAnimator lineAnimator = null;
+        ValueAnimator animator = null;
 
         if(sparkAnimator != null) {
 
-            lineAnimator = ValueAnimator.ofFloat(0, 1);
+            animator = ValueAnimator.ofFloat(0, 1);
 
-            lineAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
 
                 @Override
                 public void onAnimationUpdate(ValueAnimator animation) {
 
-                    renderPath.reset();
-
-                    if (sparkAnimator != null) {
-                        renderPath.addPath(sparkAnimator.getNextPath((float) animation.getAnimatedValue()));
-                    }
-
-                    renderPath.rLineTo(0, 0);
-
-                    invalidate();
-
-                }
-            });
-
-            lineAnimator.addListener(new Animator.AnimatorListener() {
-
-                @Override
-                public void onAnimationStart(Animator animation) {
-                }
-
-                @Override
-                public void onAnimationEnd(Animator animation) {
                     if(sparkAnimator != null) {
-                        sparkAnimator.endAnimation();
+                        sparkAnimator.animation(SparkView.this, (float) animation.getAnimatedValue());
                     }
-                }
 
-                @Override
-                public void onAnimationCancel(Animator animation) {
-                }
-
-                @Override
-                public void onAnimationRepeat(Animator animation) {
                 }
             });
+
+            // set animation duration
+            long animationDuration = sparkAnimator.getAnimationDuration();
+
+            if(animationDuration > -1) {
+                animator.setDuration(animationDuration);
+            } else {
+                // set default duration
+                if (shortAnimationTime == 0) {
+                    shortAnimationTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+                }
+
+                animator.setDuration(shortAnimationTime);
+            }
 
         }
 
-        return lineAnimator;
+        return animator;
     }
 
     private void clearData() {
