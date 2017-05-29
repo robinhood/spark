@@ -2,8 +2,9 @@ package com.robinhood.spark.anime;
 
 import java.util.List;
 
+import android.animation.Animator;
+import android.animation.ValueAnimator;
 import android.graphics.Path;
-import android.graphics.PointF;
 
 import com.robinhood.spark.SparkView;
 
@@ -12,63 +13,64 @@ import com.robinhood.spark.SparkView;
  */
 public class MorphSparkAnimator implements SparkAnimator {
 
-    private Path renderPath;
-    private List<PointF> oldPoints;
-
-    private long duration = -1;
+    private Path animationPath;
+    private List<Float> oldYPoints;
 
     public MorphSparkAnimator() {
-        this.renderPath = new Path();
+        this.animationPath = new Path();
     }
 
-    public void setOldPoints(final List<PointF> oldPoints) {
-        this.oldPoints = oldPoints;
+    public void setOldPoints(final List<Float> oldYPoints) {
+        this.oldYPoints = oldYPoints;
     }
 
     @Override
-    public void animation(SparkView view, float animatedValue) {
+    public Animator getAnimation(final SparkView sparkView) {
 
-        renderPath.reset();
-        List<PointF> currPoints = view.getPoints();
+        ValueAnimator animator = ValueAnimator.ofFloat(0, 1);
 
-        if(currPoints != null) {
-            float step;
-            float y, oldY;
-            int size = currPoints.size();
-            for (int count = 0; count < size; count++) {
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
 
-                // get oldY, can be 0 (zero) if current points are larger
-                oldY = oldPoints != null && oldPoints.size() > count ? oldPoints.get(count).y : 0f;
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
 
-                step = currPoints.get(count).y - oldY;
-                y = (step * animatedValue) + oldY;
+                float animatedValue = (float) animation.getAnimatedValue();
 
-                if (count == 0) {
-                    renderPath.moveTo(currPoints.get(count).x, y);
-                } else {
-                    renderPath.lineTo(currPoints.get(count).x, y);
+                animationPath.reset();
+                List<Float> xPoints = sparkView.getXPoints();
+                List<Float> yPoints = sparkView.getYPoints();
+
+                if (xPoints != null && yPoints != null) {
+                    float step;
+                    float y, oldY;
+                    int size = xPoints.size();
+                    for (int count = 0; count < size; count++) {
+
+                        // get oldY, can be 0 (zero) if current points are larger
+                        oldY = oldYPoints != null && oldYPoints.size() > count ? oldYPoints.get(count) : 0f;
+
+                        step = yPoints.get(count) - oldY;
+                        y = (step * animatedValue) + oldY;
+
+                        if (count == 0) {
+                            animationPath.moveTo(xPoints.get(count), y);
+                        } else {
+                            animationPath.lineTo(xPoints.get(count), y);
+                        }
+
+                    }
+
+                    // must do it to animation happens
+                    sparkView.setAnimationPath(animationPath);
+
                 }
-
             }
+        });
 
-            // must do it to animation happens
-            view.setRenderPath(renderPath);
+        // set animation duration
+        animator.setDuration(3000L);
 
-        }
-
-    }
-
-    /**
-     * Example how to set animation duration
-     * @param duration Duration of the animation in milliseconds
-     */
-    public void setAnimationDuration(long duration) {
-        this.duration = duration;
-    }
-
-    @Override
-    public long getAnimationDuration() {
-        return duration;
+        return animator;
     }
 
 }

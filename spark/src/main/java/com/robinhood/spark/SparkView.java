@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import android.animation.ValueAnimator;
+import android.animation.Animator;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -29,7 +29,6 @@ import android.graphics.Canvas;
 import android.graphics.CornerPathEffect;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.PointF;
 import android.graphics.RectF;
 import android.os.Build;
 import android.os.Handler;
@@ -58,7 +57,6 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
     @ColorInt private int scrubLineColor;
     private float scrubLineWidth;
     private boolean scrubEnabled;
-    // animation
     private SparkAnimator sparkAnimator;
 
     // the onDraw data
@@ -77,13 +75,11 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
     private Paint scrubLinePaint;
     private OnScrubListener scrubListener;
     private ScrubGestureDetector scrubGestureDetector;
-    private ValueAnimator pathAnimator;
+    private Animator pathAnimator;
     private final RectF contentRect = new RectF();
 
-    private static int shortAnimationTime;
-
-    private List<Float> currXPoints;
-    private List<PointF> currPoints;
+    private List<Float> xPoints;
+    private List<Float> yPoints;
 
     public SparkView(Context context) {
         super(context);
@@ -107,10 +103,8 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
     }
 
     private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.spark_SparkView,
                 defStyleAttr, defStyleRes);
-
         lineColor = a.getColor(R.styleable.spark_SparkView_spark_lineColor, 0);
         lineWidth = a.getDimension(R.styleable.spark_SparkView_spark_lineWidth, 0);
         cornerRadius = a.getDimension(R.styleable.spark_SparkView_spark_cornerRadius, 0);
@@ -149,8 +143,8 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
         scrubGestureDetector.setEnabled(scrubEnabled);
         setOnTouchListener(scrubGestureDetector);
 
-        currXPoints = new ArrayList<>();
-        currPoints = new ArrayList<>();
+        xPoints = new ArrayList<>();
+        yPoints = new ArrayList<>();
 
         // for backward support
         if(animateChanges) {
@@ -182,8 +176,8 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
 
         scaleHelper = new ScaleHelper(adapter, contentRect, lineWidth, fill);
 
-        currXPoints.clear();
-        currPoints.clear();
+        xPoints.clear();
+        yPoints.clear();
 
         // make our main graph path
         sparkPath.reset();
@@ -192,10 +186,9 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
             final float y = scaleHelper.getY(adapter.getY(i));
 
             // points to render graphic
-            currXPoints.add(x);
-
             // get points to animate
-            currPoints.add(new PointF(x, y));
+            xPoints.add(x);
+            yPoints.add(y);
 
             if (i == 0) {
                 sparkPath.moveTo(x, y);
@@ -271,11 +264,11 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
     }
 
     /**
-     * Set the path to render in onDraw, used for animation purposes
+     * Set the path to animate in onDraw, used for getAnimation purposes
      */
-    public void setRenderPath(final Path renderPath) {
+    public void setAnimationPath(final Path animationPath) {
         this.renderPath.reset();
-        this.renderPath.addPath(renderPath);
+        this.renderPath.addPath(animationPath);
         this.renderPath.rLineTo(0, 0);
 
         invalidate();
@@ -559,11 +552,19 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
     }
 
     /**
-     * Returns a copy of current graphic points
-     * @return current graphic points
+     * Returns a copy of current graphic X points
+     * @return current graphic X points
      */
-    public List<PointF> getPoints() {
-        return new ArrayList<>(currPoints);
+    public List<Float> getXPoints() {
+        return new ArrayList<>(xPoints);
+    }
+
+    /**
+     * Returns a copy of current graphic Y points
+     * @return current graphic Y points
+     */
+    public List<Float> getYPoints() {
+        return new ArrayList<>(yPoints);
     }
 
     private void doPathAnimation() {
@@ -579,43 +580,13 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
 
     }
 
-    private ValueAnimator getSparkAnimation() {
-
-        ValueAnimator animator = null;
+    private Animator getSparkAnimation() {
 
         if(sparkAnimator != null) {
-
-            animator = ValueAnimator.ofFloat(0, 1);
-
-            animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-
-                    if(sparkAnimator != null) {
-                        sparkAnimator.animation(SparkView.this, (float) animation.getAnimatedValue());
-                    }
-
-                }
-            });
-
-            // set animation duration
-            long animationDuration = sparkAnimator.getAnimationDuration();
-
-            if(animationDuration > -1) {
-                animator.setDuration(animationDuration);
-            } else {
-                // set default duration
-                if (shortAnimationTime == 0) {
-                    shortAnimationTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
-                }
-
-                animator.setDuration(shortAnimationTime);
-            }
-
+            return sparkAnimator.getAnimation(this);
         }
 
-        return animator;
+        return null;
     }
 
     private void clearData() {
@@ -750,7 +721,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
         if (adapter == null || adapter.getCount() == 0) return;
         if (scrubListener != null) {
             getParent().requestDisallowInterceptTouchEvent(true);
-            int index = getNearestIndex(currXPoints, x);
+            int index = getNearestIndex(xPoints, x);
             if (scrubListener != null) {
                 scrubListener.onScrubbed(adapter.getItem(index));
             }
@@ -794,6 +765,4 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
             clearData();
         }
     };
-
 }
-

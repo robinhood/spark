@@ -1,5 +1,7 @@
 package com.robinhood.spark.anime;
 
+import android.animation.Animator;
+import android.animation.ValueAnimator;
 import android.graphics.Path;
 import android.graphics.PathMeasure;
 
@@ -11,34 +13,42 @@ import com.robinhood.spark.SparkView;
 public class LineSparkAnimator implements SparkAnimator {
 
     @Override
-    public void animation(SparkView view, float animatedValue) {
+    public Animator getAnimation(final SparkView sparkView) {
 
-        Path renderPath = view.getSparkLinePath();
+        ValueAnimator animator = ValueAnimator.ofFloat(0, 1);
 
-        if(renderPath == null) {
-            return;
-        }
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
 
-        // get path length
-        PathMeasure pathMeasure = new PathMeasure(renderPath, false);
-        float endLength = pathMeasure.getLength();
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
 
-        if(endLength > 0) {
+                float animatedValue = (float) animation.getAnimatedValue();
 
-            float animatedPathLength = animatedValue * endLength;
+                Path linePath = sparkView.getSparkLinePath();
 
-            renderPath.reset();
-            pathMeasure.getSegment(0, animatedPathLength, renderPath, true);
+                if(linePath == null) {
+                    return;
+                }
 
-            // must do it to animation happens
-            view.setRenderPath(renderPath);
-        }
+                // get path length
+                PathMeasure pathMeasure = new PathMeasure(linePath, false);
+                float endLength = pathMeasure.getLength();
 
-    }
+                if(endLength > 0) {
 
-    @Override
-    public long getAnimationDuration() {
-        return -1;
+                    float animatedPathLength = animatedValue * endLength;
+
+                    linePath.reset();
+                    pathMeasure.getSegment(0, animatedPathLength, linePath, true);
+
+                    // must do it to getAnimation happens
+                    sparkView.setAnimationPath(linePath);
+                }
+
+            }
+        });
+
+        return animator;
     }
 
 }

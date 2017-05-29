@@ -148,9 +148,9 @@ just override `getX(int index)` in your `SparkAdapter` to give `SparkView` the c
 Animation
 ---------
 - To animate path changes, set `app:spark_animateChanges="true"` or call `sparkView.setAnimateChanges(true);`, this will do default animation.
-To set other animation path, call `sparkView.setAnimation(<? extends SparkAnimator>);`.
+To set other animation path, call `sparkView.setSparkAnimator(<? extends SparkAnimator>);`.
 You can create your custom animator using SparkAnimator interface.
-There are two built-in animator, LineSparkAnimator (default) and PointSparkAnimator. Execute sample app to see it in action.
+There are two built-in animator, LineSparkAnimator (default) and MorphSparkAnimator. Execute sample app to see it in action.
 
 Data Boundaries
 ---------------

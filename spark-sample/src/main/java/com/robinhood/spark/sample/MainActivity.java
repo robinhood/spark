@@ -31,19 +31,13 @@ import com.robinhood.spark.SparkView;
 import com.robinhood.spark.anime.LineSparkAnimator;
 import com.robinhood.spark.anime.MorphSparkAnimator;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity {
 
     private SparkView sparkView;
     private RandomizedAdapter adapter;
     private TextView scrubInfoTextView;
 
-    private AnimationType animationSelected;
-
-    private enum AnimationType {
-        NONE,
-        LINE,
-        MORPH
-    }
+    private String animationSelected;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,48 +59,59 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
-        findViewById(R.id.random_button).setOnClickListener(this);
+        findViewById(R.id.random_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                randomize();
+            }
+        });
 
         scrubInfoTextView = (TextView) findViewById(R.id.scrub_info_textview);
 
         // set select
-        Spinner animationSelect = (Spinner) findViewById(R.id.animation_select);
-        if(animationSelect != null) {
-            animationSelect.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, getResources().getStringArray(R.array.animations)));
-            animationSelect.setOnItemSelectedListener(new AnimationItemSelectedListener(this));
-        }
-    }
+        Spinner animationSpinner = (Spinner) findViewById(R.id.animation_spinner);
+        animationSpinner.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, getResources().getStringArray(R.array.animations)));
+        animationSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-    @Override
-    public void onClick(View view) {
+                switch(position) {
+                    case 1:
+                        animationSelected = "line";
+                        break;
 
-        switch (view.getId()) {
+                    case 2:
+                        animationSelected = "morph";
+                        break;
 
-            case R.id.random_button:
-            default:
+                    default:
+                        animationSelected = "none";
+                        break;
+                }
+
                 randomize();
-                break;
-        }
+            }
 
-    }
-
-    public void setAnimationType(AnimationType type) {
-        animationSelected = type;
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                animationSelected = "none";
+                randomize();
+            }
+        });
     }
 
     public void randomize() {
 
         switch(animationSelected) {
-            case LINE:
+            case "line":
                 sparkView.setSparkAnimator(new LineSparkAnimator());
                 adapter.randomize();
                 break;
 
-            case MORPH:
+            case "morph":
                 // set animator
                 MorphSparkAnimator animator = new MorphSparkAnimator();
-                animator.setOldPoints(sparkView.getPoints());
-                animator.setAnimationDuration(3000L);
+                animator.setOldPoints(sparkView.getYPoints());
 
                 sparkView.setSparkAnimator(animator);
                 adapter.randomize();
@@ -117,7 +122,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 adapter.randomize();
                 break;
         }
-
 
     }
 
@@ -152,40 +156,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         public float getY(int index) {
             return yData[index];
         }
-    }
-
-    private static class AnimationItemSelectedListener implements AdapterView.OnItemSelectedListener {
-
-        private MainActivity activity;
-
-        public AnimationItemSelectedListener(MainActivity activity) {
-            this.activity = activity;
-        }
-
-        @Override
-        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-            switch(position) {
-                case 2:
-                    activity.setAnimationType(AnimationType.LINE);
-                    break;
-
-                case 3:
-                    activity.setAnimationType(AnimationType.MORPH);
-                    break;
-
-                default:
-                    activity.setAnimationType(AnimationType.NONE);
-                    break;
-            }
-
-        }
-
-        @Override
-        public void onNothingSelected(AdapterView<?> adapterView) {
-            activity.setAnimationType(AnimationType.NONE);
-        }
-
     }
 
 }

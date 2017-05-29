@@ -1,5 +1,7 @@
 package com.robinhood.spark.anime;
 
+import android.animation.Animator;
+
 import com.robinhood.spark.SparkView;
 
 /**
@@ -9,16 +11,9 @@ public interface SparkAnimator {
 
     /**
      * Must do animation in Spark graphic.
-     * At the end, must call the spark.setRenderPath(renderPath), to draw the path in this animation step
-     * @param view The main SparkView object
-     * @param animatedValue Value represents the animation stage, this goes from 0 to 1
+     * At the end, must call the spark.setAnimationPath(renderPath), to draw the path in this animation step
+     * @param sparkView The main SparkView object
      */
-    void animation(final SparkView view, final float animatedValue);
-
-    /**
-     * Must return duration of animation, in milliseconds.
-     * If it return any negative value, Spark will set to default shor animation time
-     */
-    long getAnimationDuration();
+    Animator getAnimation(final SparkView sparkView);
 
 }
