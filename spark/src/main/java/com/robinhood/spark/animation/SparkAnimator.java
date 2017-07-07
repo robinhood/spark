@@ -1,4 +1,4 @@
-package com.robinhood.spark.anime;
+package com.robinhood.spark.animation;
 
 import android.animation.Animator;
 

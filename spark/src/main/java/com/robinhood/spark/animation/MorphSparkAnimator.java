@@ -1,4 +1,4 @@
-package com.robinhood.spark.anime;
+package com.robinhood.spark.animation;
 
 import java.util.List;
 
@@ -13,11 +13,13 @@ import com.robinhood.spark.SparkView;
  */
 public class MorphSparkAnimator implements SparkAnimator {
 
+    private ValueAnimator animator;
     private Path animationPath;
     private List<Float> oldYPoints;
 
     public MorphSparkAnimator() {
         this.animationPath = new Path();
+        animator = ValueAnimator.ofFloat(0, 1);
     }
 
     public void setOldPoints(final List<Float> oldYPoints) {
@@ -27,7 +29,8 @@ public class MorphSparkAnimator implements SparkAnimator {
     @Override
     public Animator getAnimation(final SparkView sparkView) {
 
-        ValueAnimator animator = ValueAnimator.ofFloat(0, 1);
+        final List<Float> xPoints = sparkView.getXPoints();
+        final List<Float> yPoints = sparkView.getYPoints();
 
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
 
@@ -37,10 +40,8 @@ public class MorphSparkAnimator implements SparkAnimator {
                 float animatedValue = (float) animation.getAnimatedValue();
 
                 animationPath.reset();
-                List<Float> xPoints = sparkView.getXPoints();
-                List<Float> yPoints = sparkView.getYPoints();
 
-                if (xPoints != null && yPoints != null) {
+                if (!xPoints.isEmpty() && !yPoints.isEmpty()) {
                     float step;
                     float y, oldY;
                     int size = xPoints.size();
@@ -60,17 +61,18 @@ public class MorphSparkAnimator implements SparkAnimator {
 
                     }
 
-                    // must do it to animation happens
+                    // must set the new animation path on each animation step to animation happens
                     sparkView.setAnimationPath(animationPath);
 
                 }
             }
         });
 
-        // set animation duration
-        animator.setDuration(3000L);
-
         return animator;
+    }
+
+    public void setDuration(long duration) {
+        animator.setDuration(duration);
     }
 
 }

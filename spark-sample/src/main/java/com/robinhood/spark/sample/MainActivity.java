@@ -28,16 +28,15 @@ import android.widget.TextView;
 
 import com.robinhood.spark.SparkAdapter;
 import com.robinhood.spark.SparkView;
-import com.robinhood.spark.anime.LineSparkAnimator;
-import com.robinhood.spark.anime.MorphSparkAnimator;
+import com.robinhood.spark.animation.LineSparkAnimator;
+import com.robinhood.spark.animation.MorphSparkAnimator;
+import com.robinhood.spark.animation.SparkAnimator;
 
 public class MainActivity extends AppCompatActivity {
 
     private SparkView sparkView;
     private RandomizedAdapter adapter;
     private TextView scrubInfoTextView;
-
-    private String animationSelected;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +61,14 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.random_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                randomize();
+
+                SparkAnimator animator = sparkView.getSparkAnimator();
+                if(animator instanceof MorphSparkAnimator) {
+                    // morph animation needs the old points of the path
+                    ((MorphSparkAnimator) animator).setOldPoints(sparkView.getYPoints());
+                }
+
+                adapter.randomize();
             }
         });
 
@@ -77,53 +83,34 @@ public class MainActivity extends AppCompatActivity {
 
                 switch(position) {
                     case 1:
-                        animationSelected = "line";
+                        sparkView.setSparkAnimator(new LineSparkAnimator());
                         break;
 
                     case 2:
-                        animationSelected = "morph";
+                        // set animator
+                        MorphSparkAnimator animator = new MorphSparkAnimator();
+                        animator.setOldPoints(sparkView.getYPoints());
+                        animator.setDuration(2000L);
+
+                        sparkView.setSparkAnimator(animator);
                         break;
 
                     default:
-                        animationSelected = "none";
+                        sparkView.setSparkAnimator(null);
                         break;
                 }
 
-                randomize();
+                adapter.randomize();
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-                animationSelected = "none";
-                randomize();
+                sparkView.setSparkAnimator(null);
+                adapter.randomize();
             }
         });
     }
 
-    public void randomize() {
-
-        switch(animationSelected) {
-            case "line":
-                sparkView.setSparkAnimator(new LineSparkAnimator());
-                adapter.randomize();
-                break;
-
-            case "morph":
-                // set animator
-                MorphSparkAnimator animator = new MorphSparkAnimator();
-                animator.setOldPoints(sparkView.getYPoints());
-
-                sparkView.setSparkAnimator(animator);
-                adapter.randomize();
-                break;
-
-            default:
-                sparkView.setSparkAnimator(null);
-                adapter.randomize();
-                break;
-        }
-
-    }
 
     public static class RandomizedAdapter extends SparkAdapter {
         private final float[] yData;
@@ -157,5 +144,4 @@ public class MainActivity extends AppCompatActivity {
             return yData[index];
         }
     }
-
 }

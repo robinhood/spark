@@ -38,8 +38,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewConfiguration;
 
-import com.robinhood.spark.anime.LineSparkAnimator;
-import com.robinhood.spark.anime.SparkAnimator;
+import com.robinhood.spark.animation.LineSparkAnimator;
+import com.robinhood.spark.animation.SparkAnimator;
 
 /**
  * A {@link SparkView} is a simplified line chart with no axes.
@@ -572,7 +572,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
             pathAnimator.cancel();
         }
 
-        pathAnimator = getSparkAnimation();
+        pathAnimator = getAnimator();
 
         if(pathAnimator != null) {
             pathAnimator.start();
@@ -580,7 +580,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
 
     }
 
-    private Animator getSparkAnimation() {
+    private Animator getAnimator() {
 
         if(sparkAnimator != null) {
             return sparkAnimator.getAnimation(this);
