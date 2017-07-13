@@ -8,7 +8,7 @@ import android.graphics.PathMeasure;
 import com.robinhood.spark.SparkView;
 
 /**
- * Line Spark Animator animates spark following the graph line
+ * Animates the sparkline by path-tracing from the first point to the last.
  */
 public class LineSparkAnimator implements SparkAnimator {
 
@@ -41,7 +41,7 @@ public class LineSparkAnimator implements SparkAnimator {
                     linePath.reset();
                     pathMeasure.getSegment(0, animatedPathLength, linePath, true);
 
-                    // must do it to getAnimation happens
+                    // set the updated path for the animation
                     sparkView.setAnimationPath(linePath);
                 }
 

@@ -10,9 +10,9 @@ import com.robinhood.spark.SparkView;
 public interface SparkAnimator {
 
     /**
-     * Must do animation in Spark graphic.
-     * At the end, must call the spark.setAnimationPath(renderPath), to draw the path in this animation step
-     * @param sparkView The main SparkView object
+     * Returns an Animator that performs the desired animation. Must call {@link SparkView#setAnimationPath} for each animation frame.
+     * See {@link LineSparkAnimator} and {@link MorphSparkAnimator} for examples.
+     * @param sparkView The SparkView object
      */
     Animator getAnimation(final SparkView sparkView);
 

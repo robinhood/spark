@@ -9,7 +9,7 @@ import android.graphics.Path;
 import com.robinhood.spark.SparkView;
 
 /**
- * Morph Spark Animation animates each point of graphic from initial position until end position in vertical way
+ * Animates each point vertically from the previous position to the current position.
  */
 public class MorphSparkAnimator implements SparkAnimator {
 
@@ -61,7 +61,7 @@ public class MorphSparkAnimator implements SparkAnimator {
 
                     }
 
-                    // must set the new animation path on each animation step to animation happens
+                    // set the updated path for the animation
                     sparkView.setAnimationPath(animationPath);
 
                 }
