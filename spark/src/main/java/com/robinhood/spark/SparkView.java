@@ -107,9 +107,9 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
 
     // misc fields
     private ScaleHelper scaleHelper;
-    private Paint sparkLinePaint;
-    private Paint baseLinePaint;
-    private Paint scrubLinePaint;
+    private Paint sparkLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private Paint baseLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private Paint scrubLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private OnScrubListener scrubListener;
     private ScrubGestureDetector scrubGestureDetector;
     private List<Float> xPoints;
@@ -146,14 +146,14 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
         lineWidth = a.getDimension(R.styleable.spark_SparkView_spark_lineWidth, 0);
         cornerRadius = a.getDimension(R.styleable.spark_SparkView_spark_cornerRadius, 0);
 
-        // for backwards compatibility, set filltype based on fill
-        boolean fill = a.getBoolean(R.styleable.spark_SparkView_spark_fill, false);
-        fillType = fill ? FillType.DOWN : FillType.NONE;
-        int tempType = a.getInt(R.styleable.spark_SparkView_spark_fillType, -1);
-        if (tempType != -1) {
-            fillType = tempType;
-            fill = isFillInternal();
-        }
+        // for backwards compatibility, set fill type based on spark_fill first, then overwrite if
+        // new spark_fillType attribute is set
+        int legacyFill = a.getBoolean(R.styleable.spark_SparkView_spark_fill, false)
+                ? FillType.DOWN
+                : FillType.NONE;
+        int fillType = a.getInt(R.styleable.spark_SparkView_spark_fillType, legacyFill);
+        setFillType(fillType);
+
         baseLineColor = a.getColor(R.styleable.spark_SparkView_spark_baseLineColor, 0);
         baseLineWidth = a.getDimension(R.styleable.spark_SparkView_spark_baseLineWidth, 0);
         scrubEnabled = a.getBoolean(R.styleable.spark_SparkView_spark_scrubEnabled, true);
@@ -162,21 +162,17 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
         animateChanges = a.getBoolean(R.styleable.spark_SparkView_spark_animateChanges, false);
         a.recycle();
 
-        sparkLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         sparkLinePaint.setColor(lineColor);
         sparkLinePaint.setStrokeWidth(lineWidth);
-        sparkLinePaint.setStyle(fill ? Paint.Style.FILL : Paint.Style.STROKE);
         sparkLinePaint.setStrokeCap(Paint.Cap.ROUND);
         if (cornerRadius != 0) {
             sparkLinePaint.setPathEffect(new CornerPathEffect(cornerRadius));
         }
 
-        baseLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         baseLinePaint.setStyle(Paint.Style.STROKE);
         baseLinePaint.setColor(baseLineColor);
         baseLinePaint.setStrokeWidth(baseLineWidth);
 
-        scrubLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         scrubLinePaint.setStyle(Paint.Style.STROKE);
         scrubLinePaint.setStrokeWidth(scrubLineWidth);
         scrubLinePaint.setColor(scrubLineColor);
@@ -270,7 +266,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
             case FillType.NONE:
                 return null;
             case FillType.UP:
-                return 0F - getPaddingTop();
+                return (float) getPaddingTop();
             case FillType.DOWN:
                 return (float) getHeight() - getPaddingBottom();
             case FillType.TOWARD_ZERO:
