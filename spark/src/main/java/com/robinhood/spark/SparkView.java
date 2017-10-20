@@ -88,7 +88,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
     @ColorInt private int lineColor;
     private float lineWidth;
     private float cornerRadius;
-    private int fillType;
+    @FillType private int fillType = -1;
     @ColorInt private int baseLineColor;
     private float baseLineWidth;
     @ColorInt private int scrubLineColor;
@@ -478,6 +478,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
                 case FillType.DOWN:
                 case FillType.TOWARD_ZERO:
                     sparkLinePaint.setStyle(Paint.Style.FILL);
+                    break;
                 default:
                     throw new IllegalStateException(
                             String.format(Locale.US, "Unknown fill-type: %d", fillType)
