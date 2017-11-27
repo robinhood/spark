@@ -61,13 +61,6 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.random_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                SparkAnimator animator = sparkView.getSparkAnimator();
-                if(animator instanceof MorphSparkAnimator) {
-                    // morph animation needs the old points of the path
-                    ((MorphSparkAnimator) animator).setOldPoints(sparkView.getYPoints());
-                }
-
                 adapter.randomize();
             }
         });
@@ -89,7 +82,6 @@ public class MainActivity extends AppCompatActivity {
                     case 2:
                         // set animator
                         MorphSparkAnimator animator = new MorphSparkAnimator();
-                        animator.setOldPoints(sparkView.getYPoints());
                         animator.setDuration(2000L);
 
                         sparkView.setSparkAnimator(animator);

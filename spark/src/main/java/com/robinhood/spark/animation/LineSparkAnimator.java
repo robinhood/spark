@@ -17,34 +17,32 @@ public class LineSparkAnimator implements SparkAnimator {
 
         ValueAnimator animator = ValueAnimator.ofFloat(0, 1);
 
-        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+        final Path linePath = sparkView.getSparkLinePath();
 
+        if(linePath == null) {
+            return null;
+        }
+
+        // get path length
+        final PathMeasure pathMeasure = new PathMeasure(linePath, false);
+        final float endLength = pathMeasure.getLength();
+
+        if(endLength <= 0) {
+            return null;
+        }
+
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
-
                 float animatedValue = (float) animation.getAnimatedValue();
 
-                Path linePath = sparkView.getSparkLinePath();
+                float animatedPathLength = animatedValue * endLength;
 
-                if(linePath == null) {
-                    return;
-                }
+                linePath.reset();
+                pathMeasure.getSegment(0, animatedPathLength, linePath, true);
 
-                // get path length
-                PathMeasure pathMeasure = new PathMeasure(linePath, false);
-                float endLength = pathMeasure.getLength();
-
-                if(endLength > 0) {
-
-                    float animatedPathLength = animatedValue * endLength;
-
-                    linePath.reset();
-                    pathMeasure.getSegment(0, animatedPathLength, linePath, true);
-
-                    // set the updated path for the animation
-                    sparkView.setAnimationPath(linePath);
-                }
-
+                // set the updated path for the animation
+                sparkView.setAnimationPath(linePath);
             }
         });
 
