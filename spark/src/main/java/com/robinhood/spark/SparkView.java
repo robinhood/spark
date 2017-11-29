@@ -33,13 +33,17 @@ import android.graphics.RectF;
 import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.ColorInt;
+import android.support.annotation.IntDef;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewConfiguration;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import com.robinhood.spark.animation.LineSparkAnimator;
 import com.robinhood.spark.animation.SparkAnimator;
+import java.util.Locale;
 
 /**
  * A {@link SparkView} is a simplified line chart with no axes.
@@ -47,11 +51,46 @@ import com.robinhood.spark.animation.SparkAnimator;
 public class SparkView extends View implements ScrubGestureDetector.ScrubListener {
     private static final String TAG = "Spark";
 
+    /**
+     * Holds the fill type constants to be used with {@linkplain #getFillType()} and
+     * {@linkplain #setFillType(int)}
+     */
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({
+            FillType.NONE,
+            FillType.UP,
+            FillType.DOWN,
+            FillType.TOWARD_ZERO,
+    })
+    public @interface FillType {
+        /**
+         * Fill type constant for having no fill on the graph
+         */
+        int NONE = 0;
+
+        /**
+         * Fill type constant for always filling the area above the sparkline.
+         */
+        int UP = 1;
+
+        /**
+         * Fill type constant for always filling the area below the sparkline
+         */
+        int DOWN = 2;
+
+        /**
+         * Fill type constant for filling toward zero. This will fill downward if your sparkline is
+         * positive, or upward if your sparkline is negative. If your sparkline intersects zero,
+         * each segment will still color toward zero.
+         */
+        int TOWARD_ZERO = 3;
+    }
+
     // styleable values
     @ColorInt private int lineColor;
     private float lineWidth;
     private float cornerRadius;
-    private boolean fill;
+    @FillType private int fillType = -1;
     @ColorInt private int baseLineColor;
     private float baseLineWidth;
     @ColorInt private int scrubLineColor;
@@ -70,9 +109,9 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
 
     // misc fields
     private ScaleHelper scaleHelper;
-    private Paint sparkLinePaint;
-    private Paint baseLinePaint;
-    private Paint scrubLinePaint;
+    private Paint sparkLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private Paint baseLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private Paint scrubLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private OnScrubListener scrubListener;
     private ScrubGestureDetector scrubGestureDetector;
     private Animator pathAnimator;
@@ -108,7 +147,15 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
         lineColor = a.getColor(R.styleable.spark_SparkView_spark_lineColor, 0);
         lineWidth = a.getDimension(R.styleable.spark_SparkView_spark_lineWidth, 0);
         cornerRadius = a.getDimension(R.styleable.spark_SparkView_spark_cornerRadius, 0);
-        fill = a.getBoolean(R.styleable.spark_SparkView_spark_fill, false);
+
+        // for backwards compatibility, set fill type based on spark_fill first, then overwrite if
+        // new spark_fillType attribute is set
+        int legacyFill = a.getBoolean(R.styleable.spark_SparkView_spark_fill, false)
+                ? FillType.DOWN
+                : FillType.NONE;
+        int fillType = a.getInt(R.styleable.spark_SparkView_spark_fillType, legacyFill);
+        setFillType(fillType);
+
         baseLineColor = a.getColor(R.styleable.spark_SparkView_spark_baseLineColor, 0);
         baseLineWidth = a.getDimension(R.styleable.spark_SparkView_spark_baseLineWidth, 0);
         scrubEnabled = a.getBoolean(R.styleable.spark_SparkView_spark_scrubEnabled, true);
@@ -117,21 +164,17 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
         boolean animateChanges = a.getBoolean(R.styleable.spark_SparkView_spark_animateChanges, false);
         a.recycle();
 
-        sparkLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         sparkLinePaint.setColor(lineColor);
         sparkLinePaint.setStrokeWidth(lineWidth);
-        sparkLinePaint.setStyle(fill ? Paint.Style.FILL : Paint.Style.STROKE);
         sparkLinePaint.setStrokeCap(Paint.Cap.ROUND);
         if (cornerRadius != 0) {
             sparkLinePaint.setPathEffect(new CornerPathEffect(cornerRadius));
         }
 
-        baseLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         baseLinePaint.setStyle(Paint.Style.STROKE);
         baseLinePaint.setColor(baseLineColor);
         baseLinePaint.setStrokeWidth(baseLineWidth);
 
-        scrubLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         scrubLinePaint.setStyle(Paint.Style.STROKE);
         scrubLinePaint.setStrokeWidth(scrubLineWidth);
         scrubLinePaint.setColor(scrubLineColor);
@@ -174,7 +217,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
             return;
         }
 
-        scaleHelper = new ScaleHelper(adapter, contentRect, lineWidth, fill);
+        scaleHelper = new ScaleHelper(adapter, contentRect, lineWidth, isFillInternal());
 
         xPoints.clear();
         yPoints.clear();
@@ -199,14 +242,14 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
         }
 
         // if we're filling the graph in, close the path's circuit
-        if (fill) {
-            float lastX = scaleHelper.getX(adapter.getCount() - 1);
-            float bottom = getHeight() - getPaddingBottom();
-            // line straight down to the bottom of the view
-            sparkPath.lineTo(lastX, bottom);
+        final Float fillEdge = getFillEdge();
+        if (fillEdge != null) {
+            final float lastX = scaleHelper.getX(adapter.getCount() - 1);
+            // line up or down to the fill edge
+            sparkPath.lineTo(lastX, fillEdge);
             // line straight left to far edge of the view
-            sparkPath.lineTo(getPaddingStart(), bottom);
-            // line straight up to meet the first point
+            sparkPath.lineTo(getPaddingStart(), fillEdge);
+            // closes line back on the first point
             sparkPath.close();
         }
 
@@ -222,6 +265,25 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
         renderPath.addPath(sparkPath);
 
         invalidate();
+    }
+
+    private Float getFillEdge() {
+        switch (fillType) {
+            case FillType.NONE:
+                return null;
+            case FillType.UP:
+                return (float) getPaddingTop();
+            case FillType.DOWN:
+                return (float) getHeight() - getPaddingBottom();
+            case FillType.TOWARD_ZERO:
+                float zero = scaleHelper.getY(0F);
+                float bottom = (float) getHeight() - getPaddingBottom();
+                return Math.min(zero, bottom);
+            default:
+                throw new IllegalStateException(
+                        String.format(Locale.US, "Unknown fill-type: %d", fillType)
+                );
+        }
     }
 
     /**
@@ -384,18 +446,63 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
 
     /**
      * Return whether or not this sparkline should fill the area underneath.
+     *
+     * @deprecated use {@link #getFillType()} instead
      */
     public boolean isFill() {
-        return fill;
+        switch (fillType) {
+            case FillType.NONE:
+                return false;
+            case FillType.UP:
+            case FillType.DOWN:
+            case FillType.TOWARD_ZERO:
+                return true;
+            default:
+                throw new IllegalStateException(
+                        String.format(Locale.US, "Unknown fill-type: %d", fillType)
+                );
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    private boolean isFillInternal() {
+        return isFill();
+    }
+
+    @FillType
+    public int getFillType() {
+        return fillType;
     }
 
     /**
      * Set whether or not this sparkline should fill the area underneath.
+     *
+     * @deprecated use {@link #setFillType(int)} instead
      */
+    @Deprecated
     public void setFill(boolean fill) {
-        if (this.fill != fill) {
-            this.fill = fill;
-            sparkLinePaint.setStyle(fill ? Paint.Style.FILL : Paint.Style.STROKE);
+        setFillType(fill ? FillType.DOWN : FillType.NONE);
+    }
+
+    public void setFillType(@FillType int fillType) {
+        if (this.fillType != fillType) {
+            this.fillType = fillType;
+
+            switch (fillType) {
+                case FillType.NONE:
+                    sparkLinePaint.setStyle(Paint.Style.STROKE);
+                    break;
+                case FillType.UP:
+                case FillType.DOWN:
+                case FillType.TOWARD_ZERO:
+                    sparkLinePaint.setStyle(Paint.Style.FILL);
+                    break;
+                default:
+                    throw new IllegalStateException(
+                            String.format(Locale.US, "Unknown fill-type: %d", fillType)
+                    );
+            }
+
             populatePath();
         }
     }
