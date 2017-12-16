@@ -16,13 +16,13 @@
 
 package com.robinhood.spark.sample;
 
-import java.util.Random;
-
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -30,7 +30,8 @@ import com.robinhood.spark.SparkAdapter;
 import com.robinhood.spark.SparkView;
 import com.robinhood.spark.animation.LineSparkAnimator;
 import com.robinhood.spark.animation.MorphSparkAnimator;
-import com.robinhood.spark.animation.SparkAnimator;
+
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -62,6 +63,17 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 adapter.randomize();
+            }
+        });
+
+        ((CheckBox)findViewById(R.id.fillCheckBox)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+            {
+                if ( isChecked )
+                    sparkView.setFillType(SparkView.FillType.DOWN);
+                else
+                    sparkView.setFillType(SparkView.FillType.NONE);
             }
         });
 

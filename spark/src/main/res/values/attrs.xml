@@ -8,6 +8,7 @@
         <attr name="spark_cornerRadius" format="dimension|reference" />
         <!-- {@deprecated Use fillType instead.} -->
         <attr name="spark_fill" format="boolean|reference" />
+        <attr name="spark_fillColor" format="color|reference" />
         <attr name="spark_fillType" format="enum">
             <!-- must match values in SparkView.FillType -->
             <enum name="none" value="0" />
