@@ -87,38 +87,38 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
     }
 
     // styleable values
-    @ColorInt private int lineColor;
-    private float lineWidth;
-    private float cornerRadius;
-    @FillType private int fillType = -1;
-    @ColorInt private int baseLineColor;
-    private float baseLineWidth;
-    @ColorInt private int scrubLineColor;
-    private float scrubLineWidth;
-    private boolean scrubEnabled;
-    private SparkAnimator sparkAnimator;
+    @ColorInt protected int lineColor;
+    protected float lineWidth;
+    protected float cornerRadius;
+    @FillType protected int fillType = -1;
+    @ColorInt protected int baseLineColor;
+    protected float baseLineWidth;
+    @ColorInt protected int scrubLineColor;
+    protected float scrubLineWidth;
+    protected boolean scrubEnabled;
+    protected SparkAnimator sparkAnimator;
 
     // the onDraw data
-    private final Path renderPath = new Path();
-    private final Path sparkPath = new Path();
-    private final Path baseLinePath = new Path();
-    private final Path scrubLinePath = new Path();
+    protected final Path renderPath = new Path();
+    protected final Path sparkPath = new Path();
+    protected final Path baseLinePath = new Path();
+    protected final Path scrubLinePath = new Path();
 
     // adapter
-    private SparkAdapter adapter;
+    protected SparkAdapter adapter;
 
     // misc fields
-    private ScaleHelper scaleHelper;
-    private Paint sparkLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private Paint baseLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private Paint scrubLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private OnScrubListener scrubListener;
-    private ScrubGestureDetector scrubGestureDetector;
-    private Animator pathAnimator;
-    private final RectF contentRect = new RectF();
+    protected ScaleHelper scaleHelper;
+    protected Paint sparkLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    protected Paint baseLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    protected Paint scrubLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    protected OnScrubListener scrubListener;
+    protected ScrubGestureDetector scrubGestureDetector;
+    protected Animator pathAnimator;
+    protected final RectF contentRect = new RectF();
 
-    private List<Float> xPoints;
-    private List<Float> yPoints;
+    protected List<Float> xPoints;
+    protected List<Float> yPoints;
 
     public SparkView(Context context) {
         super(context);
@@ -205,7 +205,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
     /**
      * Populates the {@linkplain #sparkPath} with points
      */
-    private void populatePath() {
+    protected void populatePath() {
         if (adapter == null) return;
         if (getWidth() == 0 || getHeight() == 0) return;
 
@@ -267,7 +267,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
         invalidate();
     }
 
-    private Float getFillEdge() {
+    protected Float getFillEdge() {
         switch (fillType) {
             case FillType.NONE:
                 return null;
@@ -336,7 +336,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
         invalidate();
     }
 
-    private void setScrubLine(float x) {
+    protected void setScrubLine(float x) {
         scrubLinePath.reset();
         scrubLinePath.moveTo(x, getPaddingTop());
         scrubLinePath.lineTo(x, getHeight() - getPaddingBottom());
@@ -687,7 +687,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
 
     }
 
-    private Animator getAnimator() {
+    protected Animator getAnimator() {
 
         if(sparkAnimator != null) {
             return sparkAnimator.getAnimation(this);
@@ -696,7 +696,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
         return null;
     }
 
-    private void clearData() {
+    protected void clearData() {
         scaleHelper = null;
         renderPath.reset();
         sparkPath.reset();
@@ -783,7 +783,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
      * Gets the rect representing the 'content area' of the view. This is essentially the bounding
      * rect minus any padding.
      */
-    private void updateContentRect() {
+    protected void updateContentRect() {
         if (contentRect == null) return;
 
         contentRect.set(
@@ -855,7 +855,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
         void onScrubbed(Object value);
     }
 
-    private final DataSetObserver dataSetObserver = new DataSetObserver() {
+    protected final DataSetObserver dataSetObserver = new DataSetObserver() {
         @Override
         public void onChanged() {
             super.onChanged();

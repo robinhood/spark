@@ -26,7 +26,7 @@ import android.support.annotation.VisibleForTesting;
  * line, and has support for registering/notifying {@link DataSetObserver}s when data is changed.
  */
 public abstract class SparkAdapter {
-    private final DataSetObservable observable = new DataSetObservable();
+    protected final DataSetObservable observable = new DataSetObservable();
 
     /**
      * @return the number of points to be drawn
