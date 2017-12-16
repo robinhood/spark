@@ -141,7 +141,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
         init(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    protected void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.spark_SparkView,
                 defStyleAttr, defStyleRes);
         lineColor = a.getColor(R.styleable.spark_SparkView_spark_lineColor, 0);
