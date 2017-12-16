@@ -286,7 +286,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
         invalidate();
     }
 
-    private Float getFillEdge() {
+    public Float getFillEdge() {
         switch (fillType) {
             case FillType.NONE:
                 return null;
@@ -359,8 +359,14 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
         this.renderPath.reset();
         this.renderPath.addPath(animationPath);
         this.renderPath.rLineTo(0, 0);
+    }
 
-        invalidate();
+    /**
+     * Set the path to animate in onDraw, used for getAnimation purposes
+     */
+    public void setFillAnimationPath(final Path animationPath) {
+        this.fillRenderPath.reset();
+        this.fillRenderPath.addPath(animationPath);
     }
 
     private void setScrubLine(float x) {
@@ -475,6 +481,14 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
      */
     public void setSparkAnimator(SparkAnimator sparkAnimator) {
         this.sparkAnimator = sparkAnimator;
+    }
+
+    /**
+     * ScaleHelper class
+     * @return a {@link ScaleHelper} or null
+     */
+    public ScaleHelper getScaleHelper() {
+        return scaleHelper;
     }
 
     /**
@@ -778,7 +792,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
     /**
      * Helper class for handling scaling logic.
      */
-    static class ScaleHelper {
+    public static class ScaleHelper {
         // the width and height of the view
         final float width, height;
         final int size;

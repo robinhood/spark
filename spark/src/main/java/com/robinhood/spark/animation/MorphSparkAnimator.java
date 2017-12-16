@@ -16,6 +16,7 @@ public class MorphSparkAnimator implements SparkAnimator {
 
     private ValueAnimator animator = ValueAnimator.ofFloat(0, 1);
     private Path animationPath = new Path();
+    private Path animationFillPath = new Path();
     private List<Float> oldYPoints;
 
     @Override
@@ -35,6 +36,7 @@ public class MorphSparkAnimator implements SparkAnimator {
                 float animatedValue = (float) animation.getAnimatedValue();
 
                 animationPath.reset();
+                animationFillPath.reset();
 
                 float step;
                 float y, oldY;
@@ -49,14 +51,31 @@ public class MorphSparkAnimator implements SparkAnimator {
 
                     if (count == 0) {
                         animationPath.moveTo(xPoints.get(count), y);
+                        animationFillPath.moveTo(xPoints.get(count), y);
                     } else {
                         animationPath.lineTo(xPoints.get(count), y);
+                        animationFillPath.lineTo(xPoints.get(count), y);
                     }
 
                 }
 
+                // if we're filling the graph in, close the path's circuit
+                final Float fillEdge = sparkView.getFillEdge();
+                if (fillEdge != null) {
+                    final float lastX = sparkView.getScaleHelper().getX(sparkView.getAdapter().getCount() - 1);
+                    // line up or down to the fill edge
+                    animationFillPath.lineTo(lastX, fillEdge);
+                    // line straight left to far edge of the view
+                    animationFillPath.lineTo(sparkView.getPaddingStart(), fillEdge);
+                    // closes line back on the first point
+                    animationFillPath.close();
+                }
+
                 // set the updated path for the animation
                 sparkView.setAnimationPath(animationPath);
+                sparkView.setFillAnimationPath(animationFillPath);
+
+                sparkView.invalidate();
             }
         });
 

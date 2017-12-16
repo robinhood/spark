@@ -18,8 +18,10 @@ public class LineSparkAnimator implements SparkAnimator {
         ValueAnimator animator = ValueAnimator.ofFloat(0, 1);
 
         final Path linePath = sparkView.getSparkLinePath();
+        final Path fillPath = sparkView.getSparkFillPath();
 
-        if(linePath == null) {
+
+        if(linePath == null || fillPath == null) {
             return null;
         }
 
@@ -39,10 +41,31 @@ public class LineSparkAnimator implements SparkAnimator {
                 float animatedPathLength = animatedValue * endLength;
 
                 linePath.reset();
+                fillPath.reset();
+
                 pathMeasure.getSegment(0, animatedPathLength, linePath, true);
+                fillPath.addPath(linePath);
+
+                float lastPos[] = {0f, 0f};
+                //get point at animatedValue
+                pathMeasure.getPosTan(pathMeasure.getLength() * animatedValue, lastPos, null);
+
+                // if we're filling the graph in, close the path's circuit
+                final Float fillEdge = sparkView.getFillEdge();
+                if (fillEdge != null) {
+                    final float lastX = lastPos[0];
+                    // line up or down to the fill edge
+                    fillPath.lineTo(lastX, fillEdge);
+                    // line straight left to far edge of the view
+                    fillPath.lineTo(sparkView.getPaddingStart(), fillEdge);
+                    // closes line back on the first point
+                    fillPath.close();
+                }
 
                 // set the updated path for the animation
                 sparkView.setAnimationPath(linePath);
+                sparkView.setFillAnimationPath(fillPath);
+                sparkView.invalidate();
             }
         });
 
