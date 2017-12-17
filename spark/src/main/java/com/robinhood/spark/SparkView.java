@@ -90,7 +90,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
     @ColorInt private int lineColor;
     private float lineWidth;
     private float cornerRadius;
-    @FillType private int fillType = -1;
+    @FillType private int fillType = FillType.NONE;
     @ColorInt private int baseLineColor;
     private float baseLineWidth;
     @ColorInt private int scrubLineColor;
