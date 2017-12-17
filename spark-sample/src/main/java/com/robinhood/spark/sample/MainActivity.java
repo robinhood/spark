@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        sparkView = (SparkView) findViewById(R.id.sparkview);
+        sparkView = findViewById(R.id.sparkview);
 
         adapter = new RandomizedAdapter();
         sparkView.setAdapter(adapter);
@@ -65,11 +65,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        scrubInfoTextView = (TextView) findViewById(R.id.scrub_info_textview);
+        scrubInfoTextView = findViewById(R.id.scrub_info_textview);
 
         // set select
-        Spinner animationSpinner = (Spinner) findViewById(R.id.animation_spinner);
-        animationSpinner.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, getResources().getStringArray(R.array.animations)));
+        Spinner animationSpinner = findViewById(R.id.animation_spinner);
+        animationSpinner.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, getResources().getStringArray(R.array.animations)));
         animationSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
