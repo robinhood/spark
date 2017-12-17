@@ -9,7 +9,7 @@ android:
     - extra-android-m2repository
 
 script:
-  ./gradlew clean check
+  ./gradlew clean check --stacktrace
 
 jdk:
   - oraclejdk8
