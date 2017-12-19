@@ -175,12 +175,8 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
             sparkLinePaint.setPathEffect(new CornerPathEffect(cornerRadius));
         }
 
+        sparkFillPaint.set(sparkLinePaint);
         sparkFillPaint.setColor(fillColor);
-        sparkFillPaint.setStrokeWidth(lineWidth);
-        sparkFillPaint.setStrokeCap(Paint.Cap.ROUND);
-        if (cornerRadius != 0) {
-            sparkFillPaint.setPathEffect(new CornerPathEffect(cornerRadius));
-        }
         sparkFillPaint.setStyle(Paint.Style.FILL);
 
         baseLinePaint.setStyle(Paint.Style.STROKE);
