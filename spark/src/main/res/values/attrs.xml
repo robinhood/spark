@@ -2,7 +2,7 @@
 <resources>
     <attr name="spark_SparkViewStyle" format="reference" />
 
-    <declare-styleable name="spark_SparkView">
+    <declare-styleable name="SparkView">
         <attr name="spark_lineColor" format="color|reference" />
         <attr name="spark_lineWidth" format="dimension|reference" />
         <attr name="spark_cornerRadius" format="dimension|reference" />
