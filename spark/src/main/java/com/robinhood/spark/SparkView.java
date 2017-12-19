@@ -101,9 +101,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
 
     // the onDraw data
     private final Path renderPath = new Path();
-    private final Path fillRenderPath = new Path();
     private final Path sparkPath = new Path();
-    private final Path sparkFillPath = new Path();
     private final Path baseLinePath = new Path();
     private final Path scrubLinePath = new Path();
 
@@ -238,7 +236,6 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
 
         // make our main graph path
         sparkPath.reset();
-        sparkFillPath.reset();
         for (int i = 0; i < adapterCount; i++) {
             final float x = scaleHelper.getX(adapter.getX(i));
             final float y = scaleHelper.getY(adapter.getY(i));
@@ -250,10 +247,8 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
 
             if (i == 0) {
                 sparkPath.moveTo(x, y);
-                sparkFillPath.moveTo(x, y);
             } else {
                 sparkPath.lineTo(x, y);
-                sparkFillPath.lineTo(x, y);
             }
 
         }
@@ -263,11 +258,11 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
         if (fillEdge != null) {
             final float lastX = scaleHelper.getX(adapter.getCount() - 1);
             // line up or down to the fill edge
-            sparkFillPath.lineTo(lastX, fillEdge);
+            sparkPath.lineTo(lastX, fillEdge);
             // line straight left to far edge of the view
-            sparkFillPath.lineTo(getPaddingStart(), fillEdge);
+            sparkPath.lineTo(getPaddingStart(), fillEdge);
             // closes line back on the first point
-            sparkFillPath.close();
+            sparkPath.close();
         }
 
         // make our base line path
@@ -280,8 +275,6 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
 
         renderPath.reset();
         renderPath.addPath(sparkPath);
-        fillRenderPath.reset();
-        fillRenderPath.addPath(sparkFillPath);
 
         invalidate();
     }
@@ -344,29 +337,12 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
         return new Path(sparkPath);
     }
 
-
-    /**
-     * Gets a copy of the sparkline fill path
-     */
-    public Path getSparkFillPath() {
-        return new Path(sparkFillPath);
-    }
-
     /**
      * Set the path to animate in onDraw, used for getAnimation purposes
      */
     public void setAnimationPath(final Path animationPath) {
         this.renderPath.reset();
         this.renderPath.addPath(animationPath);
-        this.renderPath.rLineTo(0, 0);
-    }
-
-    /**
-     * Set the path to animate in onDraw, used for getAnimation purposes
-     */
-    public void setFillAnimationPath(final Path animationPath) {
-        this.fillRenderPath.reset();
-        this.fillRenderPath.addPath(animationPath);
     }
 
     private void setScrubLine(float x) {
@@ -389,7 +365,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
         canvas.drawPath(baseLinePath, baseLinePaint);
 
         if(fillType != FillType.NONE){
-            canvas.drawPath(fillRenderPath, sparkFillPaint);
+            canvas.drawPath(renderPath, sparkFillPaint);
         }
 
         canvas.drawPath(renderPath, sparkLinePaint);
@@ -782,9 +758,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
     private void clearData() {
         scaleHelper = null;
         renderPath.reset();
-        fillRenderPath.reset();
         sparkPath.reset();
-        sparkFillPath.reset();
         baseLinePath.reset();
         invalidate();
     }
