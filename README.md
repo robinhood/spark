@@ -186,7 +186,7 @@ Download
 Gradle:
 
 ```groovy
-compile 'com.robinhood.spark:spark:1.2.0'
+implementation 'com.robinhood.spark:spark:1.2.0'
 ```
 
 
