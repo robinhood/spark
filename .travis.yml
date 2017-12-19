@@ -5,11 +5,11 @@ android:
     - platform-tools
     - tools
     - android-26
-    - build-tools-23.0.3
+    - build-tools-26.0.2
     - extra-android-m2repository
 
 script:
-  ./gradlew clean check
+  ./gradlew clean check --stacktrace
 
 jdk:
   - oraclejdk8
