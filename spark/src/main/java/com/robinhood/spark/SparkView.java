@@ -144,27 +144,28 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
     }
 
     private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.spark_SparkView,
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.SparkView,
                 defStyleAttr, defStyleRes);
-        lineColor = a.getColor(R.styleable.spark_SparkView_spark_lineColor, 0);
-        fillColor = a.getColor(R.styleable.spark_SparkView_spark_fillColor, 0);
-        lineWidth = a.getDimension(R.styleable.spark_SparkView_spark_lineWidth, 0);
-        cornerRadius = a.getDimension(R.styleable.spark_SparkView_spark_cornerRadius, 0);
+
+        lineColor = a.getColor(R.styleable.SparkView_spark_lineColor, 0);
+        fillColor = a.getColor(R.styleable.SparkView_spark_fillColor, 0);
+        lineWidth = a.getDimension(R.styleable.SparkView_spark_lineWidth, 0);
+        cornerRadius = a.getDimension(R.styleable.SparkView_spark_cornerRadius, 0);
 
         // for backwards compatibility, set fill type based on spark_fill first, then overwrite if
         // new spark_fillType attribute is set
-        int legacyFill = a.getBoolean(R.styleable.spark_SparkView_spark_fill, false)
+        int legacyFill = a.getBoolean(R.styleable.SparkView_spark_fill, false)
                 ? FillType.DOWN
                 : FillType.NONE;
-        int fillType = a.getInt(R.styleable.spark_SparkView_spark_fillType, legacyFill);
+        int fillType = a.getInt(R.styleable.SparkView_spark_fillType, legacyFill);
         setFillType(fillType);
 
-        baseLineColor = a.getColor(R.styleable.spark_SparkView_spark_baseLineColor, 0);
-        baseLineWidth = a.getDimension(R.styleable.spark_SparkView_spark_baseLineWidth, 0);
-        scrubEnabled = a.getBoolean(R.styleable.spark_SparkView_spark_scrubEnabled, true);
-        scrubLineColor = a.getColor(R.styleable.spark_SparkView_spark_scrubLineColor, baseLineColor);
-        scrubLineWidth = a.getDimension(R.styleable.spark_SparkView_spark_scrubLineWidth, lineWidth);
-        boolean animateChanges = a.getBoolean(R.styleable.spark_SparkView_spark_animateChanges, false);
+        baseLineColor = a.getColor(R.styleable.SparkView_spark_baseLineColor, 0);
+        baseLineWidth = a.getDimension(R.styleable.SparkView_spark_baseLineWidth, 0);
+        scrubEnabled = a.getBoolean(R.styleable.SparkView_spark_scrubEnabled, true);
+        scrubLineColor = a.getColor(R.styleable.SparkView_spark_scrubLineColor, baseLineColor);
+        scrubLineWidth = a.getDimension(R.styleable.SparkView_spark_scrubLineWidth, lineWidth);
+        boolean animateChanges = a.getBoolean(R.styleable.SparkView_spark_animateChanges, false);
         a.recycle();
 
         sparkLinePaint.setStyle(Paint.Style.STROKE);
