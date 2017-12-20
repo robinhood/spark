@@ -20,8 +20,7 @@ public class LineSparkAnimator implements SparkAnimator {
         ValueAnimator animator = ValueAnimator.ofFloat(0, 1);
 
         final Path linePath = sparkView.getSparkLinePath();
-
-
+        
         if(linePath == null) {
             return null;
         }

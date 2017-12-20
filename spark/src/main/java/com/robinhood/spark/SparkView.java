@@ -466,7 +466,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
      * ScaleHelper class
      * @return a {@link ScaleHelper} or null
      */
-    public ScaleHelper getScaleHelper() {
+    ScaleHelper getScaleHelper() {
         return scaleHelper;
     }
 
