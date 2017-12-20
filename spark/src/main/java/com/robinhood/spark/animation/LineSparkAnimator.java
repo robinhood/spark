@@ -1,6 +1,7 @@
 package com.robinhood.spark.animation;
 
 import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.graphics.Path;
 import android.graphics.PathMeasure;
@@ -11,6 +12,7 @@ import com.robinhood.spark.SparkView;
  * Animates the sparkline by path-tracing from the first point to the last.
  */
 public class LineSparkAnimator implements SparkAnimator {
+    private boolean ended = false;
 
     @Override
     public Animator getAnimation(final SparkView sparkView) {
@@ -38,7 +40,6 @@ public class LineSparkAnimator implements SparkAnimator {
                 float animatedValue = (float) animation.getAnimatedValue();
 
                 float animatedPathLength = animatedValue * endLength;
-
                 linePath.reset();
 
                 pathMeasure.getSegment(0, animatedPathLength, linePath, true);
@@ -47,20 +48,23 @@ public class LineSparkAnimator implements SparkAnimator {
                 //get point at animatedValue
                 pathMeasure.getPosTan(pathMeasure.getLength() * animatedValue, lastPos, null);
 
-                // if we're filling the graph in, close the path's circuit
-                final Float fillEdge = sparkView.getFillEdge();
-                if (fillEdge != null) {
-                    final float lastX = lastPos[0];
-                    // line up or down to the fill edge
-                    linePath.lineTo(lastX, fillEdge);
-                    // line straight left to far edge of the view
-                    linePath.lineTo(sparkView.getPaddingStart(), fillEdge);
-                    // closes line back on the first point
-                    linePath.close();
-                }
-
                 // set the updated path for the animation
                 sparkView.setAnimationPath(linePath);
+                sparkView.invalidate();
+            }
+        });
+
+        animator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                ended = false;
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                ended = true;
+                //Once the anim has ended the path needs to be closed properly, so force a rebuild of the path
+                sparkView.rebuildPath();
                 sparkView.invalidate();
             }
         });
@@ -68,4 +72,5 @@ public class LineSparkAnimator implements SparkAnimator {
         return animator;
     }
 
+    public Boolean hasFinishedAnimating() { return ended; }
 }

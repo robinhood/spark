@@ -213,6 +213,13 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
     /**
      * Populates the {@linkplain #sparkPath} with points
      */
+    public void rebuildPath() {
+        populatePath();
+    }
+
+    /**
+     * Populates the {@linkplain #sparkPath} with points
+     */
     private void populatePath() {
         if (adapter == null) return;
         if (getWidth() == 0 || getHeight() == 0) return;
@@ -251,7 +258,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
 
         // if we're filling the graph in, close the path's circuit
         final Float fillEdge = getFillEdge();
-        if (fillEdge != null) {
+        if (fillEdge != null && (sparkAnimator == null || sparkAnimator.hasFinishedAnimating())) {
             final float lastX = scaleHelper.getX(adapter.getCount() - 1);
             // line up or down to the fill edge
             sparkPath.lineTo(lastX, fillEdge);
@@ -275,7 +282,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
         invalidate();
     }
 
-    public Float getFillEdge() {
+    Float getFillEdge() {
         switch (fillType) {
             case FillType.NONE:
                 return null;
@@ -360,7 +367,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
         super.onDraw(canvas);
         canvas.drawPath(baseLinePath, baseLinePaint);
 
-        if(fillType != FillType.NONE){
+        if(fillType != FillType.NONE && (sparkAnimator == null || sparkAnimator.hasFinishedAnimating())){
             canvas.drawPath(renderPath, sparkFillPaint);
         }
 
@@ -762,7 +769,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
     /**
      * Helper class for handling scaling logic.
      */
-    public static class ScaleHelper {
+    static class ScaleHelper {
         // the width and height of the view
         final float width, height;
         final int size;

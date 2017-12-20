@@ -17,6 +17,7 @@ public class MorphSparkAnimator implements SparkAnimator {
     private ValueAnimator animator = ValueAnimator.ofFloat(0, 1);
     private Path animationPath = new Path();
     private List<Float> oldYPoints;
+    boolean ended = false;
 
     @Override
     public Animator getAnimation(final SparkView sparkView) {
@@ -55,18 +56,6 @@ public class MorphSparkAnimator implements SparkAnimator {
 
                 }
 
-                // if we're filling the graph in, close the path's circuit
-                final Float fillEdge = sparkView.getFillEdge();
-                if (fillEdge != null) {
-                    final float lastX = sparkView.getScaleHelper().getX(sparkView.getAdapter().getCount() - 1);
-                    // line up or down to the fill edge
-                    animationPath.lineTo(lastX, fillEdge);
-                    // line straight left to far edge of the view
-                    animationPath.lineTo(sparkView.getPaddingStart(), fillEdge);
-                    // closes line back on the first point
-                    animationPath.close();
-                }
-
                 // set the updated path for the animation
                 sparkView.setAnimationPath(animationPath);
                 sparkView.invalidate();
@@ -75,8 +64,17 @@ public class MorphSparkAnimator implements SparkAnimator {
 
         animator.addListener(new AnimatorListenerAdapter() {
             @Override
+            public void onAnimationStart(Animator animation) {
+                ended = false;
+            }
+
+            @Override
             public void onAnimationEnd(Animator animation) {
                 oldYPoints = yPoints;
+                ended = true;
+                //Once the anim has ended the path needs to be closed properly, so force a rebuild of the path
+                sparkView.rebuildPath();
+                sparkView.invalidate();
             }
         });
 
@@ -87,4 +85,5 @@ public class MorphSparkAnimator implements SparkAnimator {
         animator.setDuration(duration);
     }
 
+    public Boolean hasFinishedAnimating() { return ended; }
 }

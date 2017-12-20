@@ -19,4 +19,6 @@ public interface SparkAnimator {
      */
     Animator getAnimation(final SparkView sparkView);
 
+    Boolean hasFinishedAnimating();
+
 }
