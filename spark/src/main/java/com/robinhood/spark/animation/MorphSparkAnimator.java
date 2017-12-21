@@ -17,7 +17,6 @@ public class MorphSparkAnimator implements SparkAnimator {
     private ValueAnimator animator = ValueAnimator.ofFloat(0, 1);
     private Path animationPath = new Path();
     private List<Float> oldYPoints;
-    boolean ended = false;
 
     @Override
     public Animator getAnimation(final SparkView sparkView) {
@@ -64,14 +63,9 @@ public class MorphSparkAnimator implements SparkAnimator {
 
         animator.addListener(new AnimatorListenerAdapter() {
             @Override
-            public void onAnimationStart(Animator animation) {
-                ended = false;
-            }
-
-            @Override
             public void onAnimationEnd(Animator animation) {
                 oldYPoints = yPoints;
-                ended = true;
+
                 //Once the anim has ended the path needs to be closed properly, so force a rebuild of the path
                 sparkView.rebuildPath();
                 sparkView.invalidate();
@@ -84,6 +78,4 @@ public class MorphSparkAnimator implements SparkAnimator {
     public void setDuration(long duration) {
         animator.setDuration(duration);
     }
-
-    public Boolean hasFinishedAnimating() { return ended; }
 }

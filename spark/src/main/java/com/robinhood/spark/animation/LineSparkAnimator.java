@@ -12,8 +12,6 @@ import com.robinhood.spark.SparkView;
  * Animates the sparkline by path-tracing from the first point to the last.
  */
 public class LineSparkAnimator implements SparkAnimator {
-    private boolean ended = false;
-
     @Override
     public Animator getAnimation(final SparkView sparkView) {
 
@@ -53,23 +51,6 @@ public class LineSparkAnimator implements SparkAnimator {
             }
         });
 
-        animator.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                ended = false;
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                ended = true;
-                //Once the anim has ended the path needs to be closed properly, so force a rebuild of the path
-                sparkView.rebuildPath();
-                sparkView.invalidate();
-            }
-        });
-
         return animator;
     }
-
-    public Boolean hasFinishedAnimating() { return ended; }
 }

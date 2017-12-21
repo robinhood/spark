@@ -179,6 +179,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
         sparkFillPaint.set(sparkLinePaint);
         sparkFillPaint.setColor(fillColor);
         sparkFillPaint.setStyle(Paint.Style.FILL);
+        sparkLinePaint.setStrokeWidth(0);
 
         baseLinePaint.setStyle(Paint.Style.STROKE);
         baseLinePaint.setColor(baseLineColor);
@@ -259,7 +260,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
 
         // if we're filling the graph in, close the path's circuit
         final Float fillEdge = getFillEdge();
-        if (fillEdge != null && (sparkAnimator == null || sparkAnimator.hasFinishedAnimating())) {
+        if (fillEdge != null) {
             final float lastX = scaleHelper.getX(adapter.getCount() - 1);
             // line up or down to the fill edge
             sparkPath.lineTo(lastX, fillEdge);
@@ -283,7 +284,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
         invalidate();
     }
 
-    Float getFillEdge() {
+    private Float getFillEdge() {
         switch (fillType) {
             case FillType.NONE:
                 return null;
@@ -368,7 +369,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
         super.onDraw(canvas);
         canvas.drawPath(baseLinePath, baseLinePaint);
 
-        if(fillType != FillType.NONE && (sparkAnimator == null || sparkAnimator.hasFinishedAnimating())){
+        if(fillType != FillType.NONE){
             canvas.drawPath(renderPath, sparkFillPaint);
         }
 
@@ -421,7 +422,6 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
     public void setLineWidth(float lineWidth) {
         this.lineWidth = lineWidth;
         sparkLinePaint.setStrokeWidth(lineWidth);
-        sparkFillPaint.setStrokeWidth(lineWidth);
         invalidate();
     }
 
@@ -461,14 +461,6 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
      */
     public void setSparkAnimator(SparkAnimator sparkAnimator) {
         this.sparkAnimator = sparkAnimator;
-    }
-
-    /**
-     * ScaleHelper class
-     * @return a {@link ScaleHelper} or null
-     */
-    ScaleHelper getScaleHelper() {
-        return scaleHelper;
     }
 
     /**
