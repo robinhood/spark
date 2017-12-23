@@ -18,4 +18,5 @@ public interface SparkAnimator {
      * @param sparkView The SparkView object
      */
     Animator getAnimation(final SparkView sparkView);
+
 }

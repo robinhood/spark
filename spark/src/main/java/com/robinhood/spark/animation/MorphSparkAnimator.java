@@ -57,7 +57,6 @@ public class MorphSparkAnimator implements SparkAnimator {
 
                 // set the updated path for the animation
                 sparkView.setAnimationPath(animationPath);
-                sparkView.invalidate();
             }
         });
 
@@ -65,10 +64,6 @@ public class MorphSparkAnimator implements SparkAnimator {
             @Override
             public void onAnimationEnd(Animator animation) {
                 oldYPoints = yPoints;
-
-                //Once the anim has ended the path needs to be closed properly, so force a rebuild of the path
-                sparkView.rebuildPath();
-                sparkView.invalidate();
             }
         });
 
@@ -78,4 +73,5 @@ public class MorphSparkAnimator implements SparkAnimator {
     public void setDuration(long duration) {
         animator.setDuration(duration);
     }
+
 }
