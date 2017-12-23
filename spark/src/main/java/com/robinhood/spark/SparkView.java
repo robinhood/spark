@@ -215,13 +215,6 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
     /**
      * Populates the {@linkplain #sparkPath} with points
      */
-    public void rebuildPath() {
-        populatePath();
-    }
-
-    /**
-     * Populates the {@linkplain #sparkPath} with points
-     */
     private void populatePath() {
         if (adapter == null) return;
         if (getWidth() == 0 || getHeight() == 0) return;
@@ -348,6 +341,9 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
     public void setAnimationPath(final Path animationPath) {
         this.renderPath.reset();
         this.renderPath.addPath(animationPath);
+        this.renderPath.rLineTo(0, 0);
+
+        invalidate();
     }
 
     private void setScrubLine(float x) {
