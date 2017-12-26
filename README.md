@@ -89,7 +89,7 @@ Set a default style for all `SparkView`s in your app's theme:
         <item name="spark_SparkViewStyle">@style/MySparkViewStyle</item>
     </style>
 
-    <style name="MySparkViewStyle" parent="@style/spark_SparkView">
+    <style name="MySparkViewStyle" parent="@style/SparkView">
         <item name="spark_lineColor">@color/line_color</item>
         <item name="spark_lineWidth">@dimen/line_width</item>
         <item name="spark_cornerRadius">@dimen/corner_radius</item>
