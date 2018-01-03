@@ -520,22 +520,6 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
     public void setFillType(@FillType int fillType) {
         if (this.fillType != fillType) {
             this.fillType = fillType;
-
-            switch (fillType) {
-                case FillType.NONE:
-                    sparkFillPaint.setStyle(Paint.Style.STROKE);
-                    break;
-                case FillType.UP:
-                case FillType.DOWN:
-                case FillType.TOWARD_ZERO:
-                    sparkFillPaint.setStyle(Paint.Style.FILL);
-                    break;
-                default:
-                    throw new IllegalStateException(
-                            String.format(Locale.US, "Unknown fill-type: %d", fillType)
-                    );
-            }
-
             populatePath();
         }
     }
