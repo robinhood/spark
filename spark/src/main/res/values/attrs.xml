@@ -25,6 +25,8 @@
 
         <attr name="spark_scrubEnabled" format="boolean|reference" />
 
+        <attr name="spark_fadeLength" format="float|reference" />
+
         <attr name="spark_animateChanges" format="boolean|reference" />
     </declare-styleable>
 </resources>
