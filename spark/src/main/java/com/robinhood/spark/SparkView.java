@@ -199,6 +199,15 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
         xPoints = new ArrayList<>();
         yPoints = new ArrayList<>();
 
+        if(isInEditMode()) {
+            this.setAdapter(new SparkAdapter() {
+                private final float[] yData = new float[] {68,22,31,57,35,79,86,47,34,55,80,72,99,66,47,42,56,64,66,80,97,10,43,12,25,71,47,73,49,36};
+                @Override public int getCount() { return yData.length; }
+                @Override public Object getItem(int index) { return yData[index]; }
+                @Override public float getY(int index) { return yData[index]; }
+            });
+        }
+
         // for backward support
         if(animateChanges) {
             sparkAnimator = new LineSparkAnimator();
