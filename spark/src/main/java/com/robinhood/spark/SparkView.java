@@ -126,6 +126,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
     private ScrubGestureDetector scrubGestureDetector;
     private Animator pathAnimator;
     private final RectF contentRect = new RectF();
+    @ColorInt private int fadeColor;
 
     private List<Float> xPoints;
     private List<Float> yPoints;
@@ -201,6 +202,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
 
         fadeLineLeftPaint.set(sparkLinePaint);
         fadeLineRightPaint.set(sparkLinePaint);
+        fadeColor = Color.argb(0, Color.red(lineColor), Color.green(lineColor), Color.blue(lineColor));
 
         final Handler handler = new Handler();
         final float touchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
@@ -294,7 +296,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
             fadeLineRightPath.moveTo(contentRect.right, lastY);
             fadeLineRightPath.rLineTo(fadeLength, 0);
 
-            fadeLineLeftPaint.setShader(new LinearGradient(0,0, fadeLength, 0, Color.TRANSPARENT, lineColor, Shader.TileMode.CLAMP));
+            fadeLineLeftPaint.setShader(new LinearGradient(0,0, fadeLength, 0, fadeColor, lineColor, Shader.TileMode.CLAMP));
             fadeLineRightPaint.setShader(new LinearGradient(contentRect.right,0, contentRect.right + fadeLength, 0, lineColor, Color.TRANSPARENT, Shader.TileMode.CLAMP));
         }
 
@@ -437,6 +439,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
      */
     public void setLineColor(@ColorInt int lineColor) {
         this.lineColor = lineColor;
+        this.fadeColor = Color.argb(0, Color.red(lineColor), Color.green(lineColor), Color.blue(lineColor));
         sparkLinePaint.setColor(lineColor);
         invalidate();
     }
