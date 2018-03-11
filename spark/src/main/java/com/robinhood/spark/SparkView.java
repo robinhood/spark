@@ -159,7 +159,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
         fillColor = a.getColor(R.styleable.SparkView_spark_fillColor, 0);
         lineWidth = a.getDimension(R.styleable.SparkView_spark_lineWidth, 0);
         cornerRadius = a.getDimension(R.styleable.SparkView_spark_cornerRadius, 0);
-        fadeLength = a.getFloat(R.styleable.SparkView_spark_fadeLength, 0);
+        fadeLength = a.getDimension(R.styleable.SparkView_spark_fadeLength, 0);
 
         // for backwards compatibility, set fill type based on spark_fill first, then overwrite if
         // new spark_fillType attribute is set
