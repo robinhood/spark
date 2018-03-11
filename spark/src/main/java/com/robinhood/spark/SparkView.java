@@ -297,7 +297,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
             fadeLineRightPath.rLineTo(fadeLength, 0);
 
             fadeLineLeftPaint.setShader(new LinearGradient(0,0, fadeLength, 0, fadeColor, lineColor, Shader.TileMode.CLAMP));
-            fadeLineRightPaint.setShader(new LinearGradient(contentRect.right,0, contentRect.right + fadeLength, 0, lineColor, Color.TRANSPARENT, Shader.TileMode.CLAMP));
+            fadeLineRightPaint.setShader(new LinearGradient(contentRect.right,0, contentRect.right + fadeLength, 0, lineColor, fadeColor, Shader.TileMode.CLAMP));
         }
 
         renderPath.reset();
