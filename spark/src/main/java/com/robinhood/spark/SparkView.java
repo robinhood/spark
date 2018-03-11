@@ -101,6 +101,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
     private float scrubLineWidth;
     private boolean scrubEnabled;
     private SparkAnimator sparkAnimator;
+    private float fadeLength;
 
     // the onDraw data
     private final Path renderPath = new Path();
@@ -125,7 +126,6 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
     private ScrubGestureDetector scrubGestureDetector;
     private Animator pathAnimator;
     private final RectF contentRect = new RectF();
-    private float fadeLength;
 
     private List<Float> xPoints;
     private List<Float> yPoints;
