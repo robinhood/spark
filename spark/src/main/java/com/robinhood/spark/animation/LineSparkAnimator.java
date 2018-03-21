@@ -1,21 +1,28 @@
 package com.robinhood.spark.animation;
 
 import android.animation.Animator;
+import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
 import android.graphics.Path;
 import android.graphics.PathMeasure;
+import android.support.annotation.IntRange;
+import android.support.annotation.Nullable;
 
 import com.robinhood.spark.SparkView;
 
 /**
  * Animates the sparkline by path-tracing from the first point to the last.
  */
-public class LineSparkAnimator implements SparkAnimator {
+public class LineSparkAnimator extends Animator implements SparkAnimator {
+
+    private final ValueAnimator animator;
+
+    public LineSparkAnimator() {
+        animator = ValueAnimator.ofFloat(0, 1);
+    }
 
     @Override
     public Animator getAnimation(final SparkView sparkView) {
-
-        ValueAnimator animator = ValueAnimator.ofFloat(0, 1);
 
         final Path linePath = sparkView.getSparkLinePath();
 
@@ -49,4 +56,34 @@ public class LineSparkAnimator implements SparkAnimator {
         return animator;
     }
 
+    @Override
+    public long getStartDelay() {
+        return animator.getStartDelay();
+    }
+
+    @Override
+    public void setStartDelay(@IntRange(from = 0) long startDelay) {
+        animator.setStartDelay(startDelay);
+    }
+
+    @Override
+    public Animator setDuration(@IntRange(from = 0) long duration) {
+        animator.setDuration(duration);
+        return animator;
+    }
+
+    @Override
+    public long getDuration() {
+        return animator.getDuration();
+    }
+
+    @Override
+    public void setInterpolator(@Nullable TimeInterpolator timeInterpolator) {
+        animator.setInterpolator(timeInterpolator);
+    }
+
+    @Override
+    public boolean isRunning() {
+        return animator.isRunning();
+    }
 }

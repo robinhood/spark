@@ -19,6 +19,7 @@ package com.robinhood.spark.sample;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
@@ -88,15 +89,20 @@ public class MainActivity extends AppCompatActivity {
 
                 switch(position) {
                     case 1:
-                        sparkView.setSparkAnimator(new LineSparkAnimator());
+                        LineSparkAnimator lineSparkAnimator = new LineSparkAnimator();
+                        lineSparkAnimator.setDuration(2500L);
+                        lineSparkAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
+
+                        sparkView.setSparkAnimator(lineSparkAnimator);
                         break;
 
                     case 2:
                         // set animator
-                        MorphSparkAnimator animator = new MorphSparkAnimator();
-                        animator.setDuration(2000L);
+                        MorphSparkAnimator morphSparkAnimator = new MorphSparkAnimator();
+                        morphSparkAnimator.setDuration(2000L);
+                        morphSparkAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
 
-                        sparkView.setSparkAnimator(animator);
+                        sparkView.setSparkAnimator(morphSparkAnimator);
                         break;
 
                     default:

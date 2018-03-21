@@ -1,22 +1,30 @@
 package com.robinhood.spark.animation;
 
-import java.util.List;
-
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
 import android.graphics.Path;
+import android.support.annotation.IntRange;
+import android.support.annotation.Nullable;
 
 import com.robinhood.spark.SparkView;
+
+import java.util.List;
 
 /**
  * Animates each point vertically from the previous position to the current position.
  */
-public class MorphSparkAnimator implements SparkAnimator {
+public class MorphSparkAnimator extends Animator implements SparkAnimator {
 
-    private ValueAnimator animator = ValueAnimator.ofFloat(0, 1);
-    private Path animationPath = new Path();
+    private final ValueAnimator animator;
     private List<Float> oldYPoints;
+    private Path animationPath;
+
+    public MorphSparkAnimator() {
+        animator = ValueAnimator.ofFloat(0, 1);
+        animationPath = new Path();
+    }
 
     @Override
     public Animator getAnimation(final SparkView sparkView) {
@@ -70,8 +78,33 @@ public class MorphSparkAnimator implements SparkAnimator {
         return animator;
     }
 
-    public void setDuration(long duration) {
-        animator.setDuration(duration);
+    @Override
+    public long getStartDelay() {
+        return animator.getStartDelay();
     }
 
+    @Override
+    public void setStartDelay(@IntRange(from = 0) long startDelay) {
+        animator.setStartDelay(startDelay);
+    }
+
+    @Override
+    public Animator setDuration(@IntRange(from = 0) long duration) {
+        return animator;
+    }
+
+    @Override
+    public long getDuration() {
+        return animator.getDuration();
+    }
+
+    @Override
+    public void setInterpolator(@Nullable TimeInterpolator timeInterpolator) {
+        animator.setInterpolator(timeInterpolator);
+    }
+
+    @Override
+    public boolean isRunning() {
+        return animator.isRunning();
+    }
 }
