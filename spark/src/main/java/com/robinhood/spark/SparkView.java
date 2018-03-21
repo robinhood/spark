@@ -351,10 +351,13 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
     /**
      * Set the path to animate in onDraw, used for getAnimation purposes
      */
-    public void setAnimationPath(@NonNull Path animationPath) {
+    public void setAnimationPath(@NonNull final Path animationPath) {
+        float fillY = getFillEdge() != null ? getFillEdge() : 0;
+
         this.renderPath.reset();
         this.renderPath.addPath(animationPath);
-        this.renderPath.rLineTo(0, 0);
+        this.renderPath.rLineTo(0, fillType == FillType.UP ? -getHeight(): fillY);
+        this.renderPath.lineTo(0, fillY);
 
         invalidate();
     }
