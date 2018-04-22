@@ -6,6 +6,7 @@ import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
 import android.graphics.Path;
 import android.support.annotation.IntRange;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.robinhood.spark.SparkView;
@@ -18,7 +19,7 @@ import java.util.List;
 public class MorphSparkAnimator extends Animator implements SparkAnimator {
 
     private final ValueAnimator animator;
-    private List<Float> oldYPoints;
+    private @Nullable List<Float> oldYPoints;
     private Path animationPath;
 
     public MorphSparkAnimator() {
@@ -26,6 +27,7 @@ public class MorphSparkAnimator extends Animator implements SparkAnimator {
         animationPath = new Path();
     }
 
+    @Nullable
     @Override
     public Animator getAnimation(final SparkView sparkView) {
 

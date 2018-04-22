@@ -30,6 +30,8 @@ import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.ColorInt;
 import android.support.annotation.IntDef;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -97,7 +99,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
     @ColorInt private int scrubLineColor;
     private float scrubLineWidth;
     private boolean scrubEnabled;
-    private SparkAnimator sparkAnimator;
+    private @Nullable SparkAnimator sparkAnimator;
 
     // the onDraw data
     private final Path renderPath = new Path();
@@ -106,7 +108,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
     private final Path scrubLinePath = new Path();
 
     // adapter
-    private SparkAdapter adapter;
+    private @Nullable SparkAdapter adapter;
 
     // misc fields
     private ScaleHelper scaleHelper;
@@ -114,9 +116,9 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
     private Paint sparkFillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint baseLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint scrubLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private OnScrubListener scrubListener;
-    private ScrubGestureDetector scrubGestureDetector;
-    private Animator pathAnimator;
+    private @Nullable OnScrubListener scrubListener;
+    private @NonNull ScrubGestureDetector scrubGestureDetector;
+    private @Nullable Animator pathAnimator;
     private final RectF contentRect = new RectF();
 
     private List<Float> xPoints;
@@ -199,17 +201,17 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
         xPoints = new ArrayList<>();
         yPoints = new ArrayList<>();
 
-        if(isInEditMode()) {
+        if (isInEditMode()) {
             this.setAdapter(new SparkAdapter() {
                 private final float[] yData = new float[] {68,22,31,57,35,79,86,47,34,55,80,72,99,66,47,42,56,64,66,80,97,10,43,12,25,71,47,73,49,36};
                 @Override public int getCount() { return yData.length; }
-                @Override public Object getItem(int index) { return yData[index]; }
+                @NonNull @Override public Object getItem(int index) { return yData[index]; }
                 @Override public float getY(int index) { return yData[index]; }
             });
         }
 
         // for backward support
-        if(animateChanges) {
+        if (animateChanges) {
             sparkAnimator = new LineSparkAnimator();
         }
     }
@@ -286,6 +288,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
         invalidate();
     }
 
+    @Nullable
     private Float getFillEdge() {
         switch (fillType) {
             case FillType.NONE:
@@ -340,6 +343,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
     /**
      * Gets a copy of the sparkline path
      */
+    @NonNull
     public Path getSparkLinePath() {
         return new Path(sparkPath);
     }
@@ -347,7 +351,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
     /**
      * Set the path to animate in onDraw, used for getAnimation purposes
      */
-    public void setAnimationPath(final Path animationPath) {
+    public void setAnimationPath(@NonNull Path animationPath) {
         this.renderPath.reset();
         this.renderPath.addPath(animationPath);
         this.renderPath.rLineTo(0, 0);
@@ -477,14 +481,16 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
      * Animator class to animate Spark
      * @return a {@link SparkAnimator} or null
      */
+    @Nullable
     public SparkAnimator getSparkAnimator() {
         return sparkAnimator;
     }
+
     /**
      * Animator class to animate Spark
      * @param sparkAnimator - a {@link SparkAnimator}
      */
-    public void setSparkAnimator(SparkAnimator sparkAnimator) {
+    public void setSparkAnimator(@Nullable SparkAnimator sparkAnimator) {
         this.sparkAnimator = sparkAnimator;
     }
 
@@ -492,6 +498,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
      * Get the {@link Paint} used to draw the scrub line. Any custom modifications to this
      * {@link Paint} will not reflect until the next call to {@link #invalidate()}
      */
+    @NonNull
     public Paint getScrubLinePaint() {
         return scrubLinePaint;
     }
@@ -501,7 +508,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
      * the instance returned by {@link #getScrubLinePaint()} may result in loss of style attributes
      * specified on this view.
      */
-    public void setScrubLinePaint(Paint scrubLinePaint) {
+    public void setScrubLinePaint(@NonNull Paint scrubLinePaint) {
         this.scrubLinePaint = scrubLinePaint;
         invalidate();
     }
@@ -557,6 +564,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
      * Get the {@link Paint} used to draw the sparkline. Any modifications to this {@link Paint}
      * will not reflect until the next call to {@link #invalidate()}
      */
+    @NonNull
     public Paint getSparkLinePaint() {
         return sparkLinePaint;
     }
@@ -566,7 +574,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
      * the instance returned by {@link #getSparkLinePaint()} may result in loss of style attributes
      * specified on this view.
      */
-    public void setSparkLinePaint(Paint pathPaint) {
+    public void setSparkLinePaint(@NonNull Paint pathPaint) {
         this.sparkLinePaint = pathPaint;
         invalidate();
     }
@@ -577,7 +585,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
      * the instance returned by {@link #getSparkFillPaint()} may result in loss of style attributes
      * specified on this view.
      */
-    public void setSparkFillPaint(Paint pathPaint) {
+    public void setSparkFillPaint(@NonNull Paint pathPaint) {
         this.sparkFillPaint = pathPaint;
         invalidate();
     }
@@ -586,6 +594,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
      * Get the {@link Paint} used to draw the spark fill. Any modifications to this {@link Paint}
      * will not reflect until the next call to {@link #invalidate()}
      */
+    @NonNull
     public Paint getSparkFillPaint() {
         return sparkFillPaint;
     }
@@ -625,6 +634,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
      * Get the {@link Paint} used to draw the base line. Any modifications to this {@link Paint}
      * will not reflect until the next call to {@link #invalidate()}
      */
+    @NonNull
     public Paint getBaseLinePaint() {
         return baseLinePaint;
     }
@@ -634,7 +644,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
      * the instance returned by {@link #getBaseLinePaint()} ()} may result in loss of style
      * attributes specified on this view.
      */
-    public void setBaseLinePaint(Paint baseLinePaint) {
+    public void setBaseLinePaint(@NonNull Paint baseLinePaint) {
         this.baseLinePaint = baseLinePaint;
         invalidate();
     }
@@ -690,6 +700,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
     /**
      * Get the current {@link OnScrubListener}
      */
+    @Nullable
     public OnScrubListener getScrubListener() {
         return scrubListener;
     }
@@ -697,13 +708,14 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
     /**
      * Set a {@link OnScrubListener} to be notified of the user's scrubbing gestures.
      */
-    public void setScrubListener(OnScrubListener scrubListener) {
+    public void setScrubListener(@Nullable OnScrubListener scrubListener) {
         this.scrubListener = scrubListener;
     }
 
     /**
      * Get the backing {@link SparkAdapter}
      */
+    @Nullable
     public SparkAdapter getAdapter() {
         return adapter;
     }
@@ -711,7 +723,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
     /**
      * Sets the backing {@link SparkAdapter} to generate the points to be graphed
      */
-    public void setAdapter(SparkAdapter adapter) {
+    public void setAdapter(@Nullable SparkAdapter adapter) {
         if (this.adapter != null) {
             this.adapter.unregisterDataSetObserver(dataSetObserver);
         }
@@ -726,6 +738,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
      * Returns a copy of current graphic X points
      * @return current graphic X points
      */
+    @NonNull
     public List<Float> getXPoints() {
         return new ArrayList<>(xPoints);
     }
@@ -734,6 +747,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
      * Returns a copy of current graphic Y points
      * @return current graphic Y points
      */
+    @NonNull
     public List<Float> getYPoints() {
         return new ArrayList<>(yPoints);
     }
@@ -745,15 +759,14 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
 
         pathAnimator = getAnimator();
 
-        if(pathAnimator != null) {
+        if (pathAnimator != null) {
             pathAnimator.start();
         }
-
     }
 
+    @Nullable
     private Animator getAnimator() {
-
-        if(sparkAnimator != null) {
+        if (sparkAnimator != null) {
             return sparkAnimator.getAnimation(this);
         }
 
@@ -916,7 +929,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
          * Indicates the user is currently scrubbing over the given value. A null value indicates
          * that the user has stopped scrubbing.
          */
-        void onScrubbed(Object value);
+        void onScrubbed(@Nullable Object value);
     }
 
     private final DataSetObserver dataSetObserver = new DataSetObserver() {

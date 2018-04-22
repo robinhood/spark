@@ -19,6 +19,7 @@ package com.robinhood.spark;
 import android.database.DataSetObservable;
 import android.database.DataSetObserver;
 import android.graphics.RectF;
+import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 
 /**
@@ -36,6 +37,7 @@ public abstract class SparkAdapter {
     /**
      * @return the object at the given index
      */
+    @NonNull
     public abstract Object getItem(int index);
 
     /**
@@ -64,6 +66,7 @@ public abstract class SparkAdapter {
      *
      * @return a RectF of the bounds desired around this adapter's data.
      */
+    @NonNull
     public RectF getDataBounds() {
         final int count = getCount();
         final boolean hasBaseLine = hasBaseLine();

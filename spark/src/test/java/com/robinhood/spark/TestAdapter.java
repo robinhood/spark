@@ -1,6 +1,7 @@
 package com.robinhood.spark;
 
 import android.graphics.RectF;
+import android.support.annotation.NonNull;
 
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -32,6 +33,7 @@ public class TestAdapter extends SparkAdapter {
         return yData == null ? 0 : yData.length;
     }
 
+    @NonNull
     @Override
     public Object getItem(int index) {
         return yData[index];

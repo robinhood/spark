@@ -6,6 +6,7 @@ import android.animation.ValueAnimator;
 import android.graphics.Path;
 import android.graphics.PathMeasure;
 import android.support.annotation.IntRange;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.robinhood.spark.SparkView;
@@ -21,20 +22,16 @@ public class LineSparkAnimator extends Animator implements SparkAnimator {
         animator = ValueAnimator.ofFloat(0, 1);
     }
 
+    @Nullable
     @Override
     public Animator getAnimation(final SparkView sparkView) {
-
         final Path linePath = sparkView.getSparkLinePath();
-
-        if(linePath == null) {
-            return null;
-        }
 
         // get path length
         final PathMeasure pathMeasure = new PathMeasure(linePath, false);
         final float endLength = pathMeasure.getLength();
 
-        if(endLength <= 0) {
+        if (endLength <= 0) {
             return null;
         }
 
@@ -68,8 +65,7 @@ public class LineSparkAnimator extends Animator implements SparkAnimator {
 
     @Override
     public Animator setDuration(@IntRange(from = 0) long duration) {
-        animator.setDuration(duration);
-        return animator;
+        return animator.setDuration(duration);
     }
 
     @Override

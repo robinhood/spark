@@ -17,6 +17,7 @@
 package com.robinhood.spark;
 
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -33,10 +34,10 @@ class ScrubGestureDetector implements View.OnTouchListener {
     private boolean enabled;
     private float downX, downY;
 
-    public ScrubGestureDetector(ScrubListener scrubListener, Handler handler, float touchSlop) {
-        if (scrubListener == null || handler == null) {
-            throw new NullPointerException("Arguments cannot be null");
-        }
+    ScrubGestureDetector(
+            @NonNull ScrubListener scrubListener,
+            @NonNull Handler handler,
+            float touchSlop) {
         this.scrubListener = scrubListener;
         this.handler = handler;
         this.touchSlop = touchSlop;

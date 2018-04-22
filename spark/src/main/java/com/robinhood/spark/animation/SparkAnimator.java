@@ -1,6 +1,7 @@
 package com.robinhood.spark.animation;
 
 import android.animation.Animator;
+import android.support.annotation.Nullable;
 
 import com.robinhood.spark.SparkView;
 
@@ -17,6 +18,6 @@ public interface SparkAnimator {
      *
      * @param sparkView The SparkView object
      */
+    @Nullable
     Animator getAnimation(final SparkView sparkView);
-
 }

@@ -17,6 +17,7 @@
 package com.robinhood.spark.sample;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -144,6 +145,7 @@ public class MainActivity extends AppCompatActivity {
             return yData.length;
         }
 
+        @NonNull
         @Override
         public Object getItem(int index) {
             return yData[index];
