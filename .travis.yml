@@ -24,3 +24,6 @@ before_cache:
 cache:
   directories:
     - $HOME/.gradle
+
+before_install:
+  - yes | sdkmanager "platforms;android-27"
