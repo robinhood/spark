@@ -4,23 +4,28 @@ android:
   components:
     - platform-tools
     - tools
-    - android-26
-    - build-tools-26.0.3
-    - extra-android-m2repository
-
-script:
-  ./gradlew clean check --stacktrace
 
 jdk:
   - oraclejdk8
+
+before_install:
+  # Install SDK license so Android Gradle plugin can install deps.
+  - mkdir "$ANDROID_HOME/licenses" || true
+  - echo "$LICENSES_HASH" > "$ANDROID_HOME/licenses/android-sdk-license"
+  - echo "$LICENSES_HASH_TWO" >> "$ANDROID_HOME/licenses/android-sdk-license"
+  # Install the rest of tools (e.g., avdmanager)
+  - sdkmanager tools
+
+install: ./gradlew build --stacktrace
+
+script:
+  ./gradlew clean check --stacktrace
 
 notifications:
   email: false
 
 sudo: false
 
-before_cache:
-  - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
 cache:
   directories:
     - $HOME/.gradle
