@@ -22,6 +22,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.database.DataSetObserver;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.CornerPathEffect;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -113,6 +114,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
     // misc fields
     private ScaleHelper scaleHelper;
     private Paint sparkLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private Paint sparkLineUnderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint sparkFillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint baseLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint scrubLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -120,6 +122,9 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
     private @NonNull ScrubGestureDetector scrubGestureDetector;
     private @Nullable Animator pathAnimator;
     private final RectF contentRect = new RectF();
+    private float clipAmount = 1f;
+    private RectF clippedRect = new RectF();
+    public boolean clipOnScrub;
 
     private List<Float> xPoints;
     private List<Float> yPoints;
@@ -174,8 +179,11 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
         sparkLinePaint.setColor(lineColor);
         sparkLinePaint.setStrokeWidth(lineWidth);
         sparkLinePaint.setStrokeCap(Paint.Cap.ROUND);
+        sparkLineUnderPaint = new Paint(sparkLinePaint);
+        sparkLineUnderPaint.setColor(Color.GRAY);
         if (cornerRadius != 0) {
             sparkLinePaint.setPathEffect(new CornerPathEffect(cornerRadius));
+            sparkLineUnderPaint.setPathEffect(new CornerPathEffect(cornerRadius));
         }
 
         sparkFillPaint.set(sparkLinePaint);
@@ -402,8 +410,26 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
             canvas.drawPath(renderPath, sparkFillPaint);
         }
 
+        if(clipAmount < 1) {
+            canvas.drawPath(renderPath, sparkLineUnderPaint);
+            canvas.save();
+            canvas.clipRect(clippedRect);
+        }
         canvas.drawPath(renderPath, sparkLinePaint);
+        if(clipAmount < 1) {
+            canvas.restore();
+        }
         canvas.drawPath(scrubLinePath, scrubLinePaint);
+    }
+
+    /**
+     * Set horizontal clip amount, set to 1 to disable clipping
+     * @param amount [0..1]
+     */
+    public void setClipAmount(float amount) {
+        clipAmount = Math.max(0f, Math.min(1f, amount));
+        this.clippedRect.right = contentRect.right * clipAmount;
+        invalidate();
     }
 
     /**
@@ -869,6 +895,10 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
                 getWidth() - getPaddingEnd(),
                 getHeight() - getPaddingBottom()
         );
+
+        //also update clipping rect
+        clippedRect.set(contentRect);
+        setClipAmount(clipAmount);
     }
 
     /**
@@ -912,6 +942,9 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
         }
 
         setScrubLine(x);
+        if(clipOnScrub) {
+            setClipAmount(x / contentRect.right);
+        }
     }
 
     @Override
