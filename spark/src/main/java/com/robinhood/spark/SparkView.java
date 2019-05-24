@@ -265,7 +265,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
         // if we're filling the graph in, close the path's circuit
         final Float fillEdge = getFillEdge();
         if (fillEdge != null) {
-            final float lastX = scaleHelper.getX(adapter.getCount() - 1);
+            final float lastX = scaleHelper.getX(adapter.getX(adapter.getCount() - 1));
             // line up or down to the fill edge
             sparkPath.lineTo(lastX, fillEdge);
             // line straight left to far edge of the view
