@@ -127,6 +127,9 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
     private List<Float> xPoints;
     private List<Float> yPoints;
     private String scrubTextUnit = "";
+    private boolean isOnScrub = false;
+    private float scrubX = 0f;
+    private int mIndex = 0;
 
     public SparkView(Context context) {
         super(context);
@@ -917,10 +920,6 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
 
         return index;
     }
-
-    private boolean isOnScrub = false;
-    private float scrubX = 0f;
-    private int mIndex = 0;
 
     @Override
     public void onScrubbed(float x, float y) {
