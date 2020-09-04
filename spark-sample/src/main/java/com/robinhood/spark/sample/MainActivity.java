@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
 
         adapter = new RandomizedAdapter();
         sparkView.setAdapter(adapter);
+        sparkView.setScrubTextUnit(" kmh");
         sparkView.setScrubListener(new SparkView.OnScrubListener() {
             @Override
             public void onScrubbed(Object value, int index) {

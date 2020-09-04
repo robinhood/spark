@@ -14,5 +14,7 @@
         <item name="spark_scrubLineWidth">@dimen/spark_scrub_line_width</item>
         <item name="spark_scrubEnabled">false</item>
         <item name="spark_animateChanges">true</item>
+        <item name="spark_scrub_indicator_text_color">@color/spark_base_line_color</item>
+        <item name="spark_scrub_indicator_text_size">14dp</item>
     </style>
 </resources>

@@ -26,5 +26,7 @@
         <attr name="spark_scrubEnabled" format="boolean|reference" />
 
         <attr name="spark_animateChanges" format="boolean|reference" />
+        <attr name="spark_scrub_indicator_text_size" format="dimension|reference" />
+        <attr name="spark_scrub_indicator_text_color" format="color|reference" />
     </declare-styleable>
 </resources>

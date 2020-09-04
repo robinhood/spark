@@ -91,6 +91,8 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
     // styleable values
     @ColorInt private int lineColor;
     @ColorInt private int fillColor;
+    @ColorInt private int scrubTextColor;
+    private float scrubTextSize;
     private float lineWidth;
     private float cornerRadius;
     @FillType private int fillType = FillType.NONE;
@@ -116,6 +118,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
     private Paint sparkFillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint baseLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint scrubLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private @Nullable OnScrubListener scrubListener;
     private @NonNull ScrubGestureDetector scrubGestureDetector;
     private @Nullable Animator pathAnimator;
@@ -123,6 +126,7 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
 
     private List<Float> xPoints;
     private List<Float> yPoints;
+    private String scrubTextUnit = "";
 
     public SparkView(Context context) {
         super(context);
@@ -151,6 +155,8 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
 
         lineColor = a.getColor(R.styleable.SparkView_spark_lineColor, 0);
         fillColor = a.getColor(R.styleable.SparkView_spark_fillColor, 0);
+        scrubTextColor = a.getColor(R.styleable.SparkView_spark_scrub_indicator_text_color, 0);
+        scrubTextSize = a.getDimension(R.styleable.SparkView_spark_scrub_indicator_text_size, 0);
         lineWidth = a.getDimension(R.styleable.SparkView_spark_lineWidth, 0);
         cornerRadius = a.getDimension(R.styleable.SparkView_spark_cornerRadius, 0);
 
@@ -169,6 +175,9 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
         scrubLineWidth = a.getDimension(R.styleable.SparkView_spark_scrubLineWidth, lineWidth);
         boolean animateChanges = a.getBoolean(R.styleable.SparkView_spark_animateChanges, false);
         a.recycle();
+
+        textPaint.setColor(scrubTextColor);
+        textPaint.setTextSize(scrubTextSize);
 
         sparkLinePaint.setStyle(Paint.Style.STROKE);
         sparkLinePaint.setColor(lineColor);
@@ -359,8 +368,8 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
         invalidate();
     }
 
+
     private void setScrubLine(float x) {
-        x = resolveBoundedScrubLine(x);
         scrubLinePath.reset();
         scrubLinePath.moveTo(x, getPaddingTop());
         scrubLinePath.lineTo(x, getHeight() - getPaddingBottom());
@@ -404,6 +413,11 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
 
         canvas.drawPath(renderPath, sparkLinePaint);
         canvas.drawPath(scrubLinePath, scrubLinePaint);
+
+        if (isOnScrub && adapter != null && mIndex < adapter.getCount()) {
+            Object value = adapter.getItem(mIndex);
+            canvas.drawText(value.toString() + scrubTextUnit,scrubX + 10,scrubTextSize,textPaint);
+        }
     }
 
     /**
@@ -752,6 +766,10 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
         return new ArrayList<>(yPoints);
     }
 
+    public void setScrubTextUnit(String unit){
+        scrubTextUnit = unit;
+    }
+
     private void doPathAnimation() {
         if (pathAnimator != null) {
             pathAnimator.cancel();
@@ -900,24 +918,36 @@ public class SparkView extends View implements ScrubGestureDetector.ScrubListene
         return index;
     }
 
+    private boolean isOnScrub = false;
+    private float scrubX = 0f;
+    private int mIndex = 0;
+
     @Override
     public void onScrubbed(float x, float y) {
         if (adapter == null || adapter.getCount() == 0) return;
+
+        getParent().requestDisallowInterceptTouchEvent(true);
+        int index = getNearestIndex(xPoints, x);
         if (scrubListener != null) {
-            getParent().requestDisallowInterceptTouchEvent(true);
-            int index = getNearestIndex(xPoints, x);
-            if (scrubListener != null) {
-                scrubListener.onScrubbed(adapter.getItem(index),index);
-            }
+            scrubListener.onScrubbed(adapter.getItem(index), index);
         }
 
-        setScrubLine(x);
+        float scrubXBound = resolveBoundedScrubLine(x);
+        setScrubLine(scrubXBound);
+
+        //set scrub index
+        isOnScrub = true;
+        scrubX = scrubXBound;
+        mIndex = index;
     }
 
     @Override
     public void onScrubEnded() {
         scrubLinePath.reset();
         if (scrubListener != null) scrubListener.onScrubbed(null, -1);
+        isOnScrub = false;
+        scrubX = 0f;
+        mIndex = 0;
         invalidate();
     }
 
