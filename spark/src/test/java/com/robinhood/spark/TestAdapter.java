@@ -1,7 +1,7 @@
 package com.robinhood.spark;
 
 import android.graphics.RectF;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
