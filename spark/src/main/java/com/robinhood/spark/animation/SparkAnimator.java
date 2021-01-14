@@ -1,7 +1,7 @@
 package com.robinhood.spark.animation;
 
 import android.animation.Animator;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.robinhood.spark.SparkView;
 
